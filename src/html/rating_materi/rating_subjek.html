@@ -1,60 +1,3 @@
-<?php
-include("connect.php");
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $materi_id = isset($_GET['materi_id']) ? intval($_GET['materi_id']) : 3;
-
-    if ($materi_id > 0) {
-        $query = "
-            SELECT 
-                AVG(rating) AS average_rating, 
-                COUNT(*) AS total_ratings,
-                SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS star_5,
-                SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS star_4,
-                SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS star_3,
-                SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS star_2,
-                SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS star_1
-            FROM materi_ratings
-            WHERE materi_id = ?
-        ";
-
-        if ($stmt = $conn->prepare($query)) {
-            $stmt->bindValue(1, $materi_id, PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                $response = [
-                    "status" => "success",
-                    "average_rating" => round($result['average_rating'], 2),
-                    "total_ratings" => $result['total_ratings'],
-                    "ratings_distribution" => [
-                        "5" => intval($result['star_5']),
-                        "4" => intval($result['star_4']),
-                        "3" => intval($result['star_3']),
-                        "2" => intval($result['star_2']),
-                        "1" => intval($result['star_1'])
-                    ]
-                ];
-                echo json_encode($response);
-            } else {
-                //query gagal
-                echo json_encode(["status" => "error", "message" => "Gagal mendapatkan data rating."]);
-            }
-            $stmt = null;
-        } else {
-            // error koneksi database
-            echo json_encode(["status" => "error", "message" => "Koneksi ke database gagal."]);
-        }
-    } else {
-        echo json_encode(["status" => "error", "message" => "ID materi tidak valid."]);
-    }
-    $conn = null;
-} else {
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,8 +5,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dialek.id - Platform untuk belajar topik dengan rating pengguna">
     <meta name="author" content="Dialek.id">
-    <title>Dialek.Id</title>
-    <link rel="stylesheet" href="../styles/style2.css">
+    <title>Dialek.Id - Rating Subjek</title>
+    <link rel="stylesheet" href="../../styles/style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         .stars i.active {
@@ -79,19 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <nav class="flex items-center justify-between w-full px-12 py-12">
         <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
         <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
-            <p id="account-username" class="px-4 text-xl">username</p>
+            <p id="account-username" class="px-4 text-xl">memuat...</p>
             <i class="fa-solid fa-user text-2xl"></i> 
         </div>
     </nav>
+
     <section class="main flex flex-col mx-auto w-4/5 items-center flex-grow space-y-16">
         <div class="bg-shadow2 flex-col flex justify-between items-center">
             <div class="text-center">
-                <h1 class="text-gradient font-extrabold text-6xl">KATA BENDA</h1>
+                <h1 class="text-gradient font-extrabold text-6xl">SUBJEK</h1>
             </div>
             <button id="mulai-button" class="button-custom drop-shadow-sm mt-6">
                 <p class="text-center font-bold text-md mx-6">Mulai!</p>
             </button>
         </div>
+
         <div class="rating-box bg-shadow2 flex justify-center items-center flex-col">
             <div class="text-2xl w-1/2 items-center justify-center flex-row flex">
                 <div class="stars text-bar justify-between">
@@ -139,19 +84,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             </div>
         </div>
     </section>
+
     <footer class="flex items-center justify-between w-full px-4 py-4">
         <button id="kembali-button" class="button-custom2 text-sm mx-6">
             Kembali
         </button>
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Elements
         const stars = document.querySelectorAll(".stars i");
         const ratingValue = document.getElementById("rating-value");
         const progressBars = document.querySelectorAll(".progress .fill");
+        const mulaiButton = document.getElementById("mulai-button");
+        const kembaliButton = document.getElementById("kembali-button");
+        const homeBtn = document.getElementById("home");
+        const profileBtn = document.getElementById("profile-button");
 
-        const materiId = 1;
+        // Materi ID
+        const materiId = "subjek";
 
+        // Validate rating data
         function validateData(data) {
             if (
                 typeof data.average_rating === "number" &&
@@ -164,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             return false;
         }
 
+        // Update UI with rating data
         function updateUI(data) {
             ratingValue.textContent = `${data.average_rating}/5`;
 
@@ -187,31 +160,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             });
         }
 
-        function loadRating() {
-            const loadingElement = document.createElement('div');
-            loadingElement.classList.add('loading');
-            loadingElement.textContent = 'Loading...';
-            document.body.appendChild(loadingElement);
+        // Load rating from Firestore
+        async function loadRating() {
+            try {
+                const ratingsRef = collection(db, "materi_ratings");
+                const q = query(ratingsRef, where("id_materi", "==", materiId));
+                const querySnapshot = await getDocs(q);
 
-            fetch(`get_rating.php?materi_id=${materiId}`)
-                .then(response => response.json())
-                .then(data => {
-                    loadingElement.style.display = 'none';
+                let totalRatings = 0;
+                let sumRating = 0;
+                const ratingDistribution = {
+                    "5": 0,
+                    "4": 0,
+                    "3": 0,
+                    "2": 0,
+                    "1": 0
+                };
 
-                    if (data.status === "success" && validateData(data)) {
-                        updateUI(data);
-                    } else {
-                        alert("Data rating tidak valid atau gagal memuat.");
+                querySnapshot.forEach((docSnap) => {
+                    const rating = docSnap.data().rating;
+                    if (rating >= 1 && rating <= 5) {
+                        sumRating += rating;
+                        ratingDistribution[rating.toString()]++;
+                        totalRatings++;
                     }
-                })
-                .catch(error => {
-                    loadingElement.style.display = 'none';
-                    console.error("Error:", error);
-                    alert("Terjadi kesalahan saat memuat data rating.");
                 });
+
+                const averageRating = totalRatings > 0 ? sumRating / totalRatings : 0;
+
+                const data = {
+                    average_rating: parseFloat(averageRating.toFixed(2)),
+                    total_ratings: totalRatings,
+                    ratings_distribution: ratingDistribution
+                };
+
+                if (validateData(data)) {
+                    updateUI(data);
+                } else {
+                    updateUI({
+                        average_rating: 0,
+                        total_ratings: 0,
+                        ratings_distribution: { "5": 0, "4": 0, "3": 0, "2": 0, "1": 0 }
+                    });
+                }
+            } catch (error) {
+                console.error("Error loading rating:", error);
+                updateUI({
+                    average_rating: 0,
+                    total_ratings: 0,
+                    ratings_distribution: { "5": 0, "4": 0, "3": 0, "2": 0, "1": 0 }
+                });
+            }
         }
 
-        loadRating();
+        // Check authentication and load user data
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        document.getElementById('account-username').textContent = userData.username || 'User';
+                        loadRating();
+                    }
+                } catch (error) {
+                    console.error("Error loading user data:", error);
+                    loadRating();
+                }
+            } else {
+                alert("Silakan login terlebih dahulu");
+                window.location.href = "../../masuk.html";
+            }
+        });
+
+        // Navigation event listeners
+        mulaiButton.addEventListener("click", () => {
+            window.location.href = "../materi/subjek.html";
+        });
+
+        kembaliButton.addEventListener("click", () => {
+            window.location.href = "../materi-pilih-topik.html";
+        });
+
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "../dashboard-batak.html";
+        });
+
+        profileBtn.addEventListener("click", () => {
+            window.location.href = "../akun-pengguna.html";
+        });
     </script>
 </body>
 </html>

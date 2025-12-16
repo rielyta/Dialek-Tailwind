@@ -1,188 +1,398 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/style2.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"> 
-    <title>Dialek.id</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pengaturan - Dialek.id</title>
+  <link rel="stylesheet" href="../styles/style2.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #10b981;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .error-banner {
+      background: #fee;
+      border: 2px solid #fcc;
+      color: #c33;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .error-banner.show {
+      display: block;
+    }
+  </style>
 </head>
+
 <body class="bg-custom-radial font-inter flex flex-col min-h-screen">
-    <nav class="flex items-center justify-between w-full px-12 py-12">
-        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
-    </nav>
 
-    <section class="main flex flex-col mx-auto w-4/5 items-center flex-grow space-y-16">
-    <h1 class="text-3xl font-bold text-custom2 mb-6">Pengaturan</h1>
-    <!-- Main Container -->
-    <div class="flex flex-col items-center p-8 mt-10 w-11/12 md:w-8/12 lg:w-6/12 bg-white bg-opacity-30 rounded-3xl shadow-lg font-inter border-[1.5px] border-bar">
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="loading-overlay">
+  <div>
+    <div class="spinner mx-auto mb-4"></div>
+    <p class="text-gray-600">Memuat data...</p>
+  </div>
+</div>
 
-        <!-- Profile Image Section -->
-        <div class="relative">
-            <label for="profile-picture" class="relative cursor-pointer">
-                <img id="profile-image" src="../assets/pp.webp" alt="Profile Image" class="w-24 h-24 rounded-full bg-gray-200 object-cover">
-                <input type="file" id="profile-picture" accept="image/*" class="hidden" onchange="previewProfilePicture(event)">
-                <span class="absolute bottom-0 right-0 bg-white rounded-full p-1 text-green-600 ml-20">
-                    <i class="fa fa-edit"></i>
-                </span>
-            </label>
+<nav class="flex items-center justify-between w-full px-12 py-12">
+  <div id="home" class="logo font-irish text-2xl cursor-pointer">dialek.id</div>
+</nav>
+
+<section class="main flex flex-col mx-auto w-4/5 items-center flex-grow space-y-8 mt-8">
+  <h1 class="text-3xl font-bold text-custom2">Pengaturan</h1>
+
+  <!-- Error Banner -->
+  <div id="error-banner" class="error-banner w-11/12 md:w-8/12 lg:w-6/12">
+    <strong>⚠️ Sesi Login Bermasalah</strong>
+    <p class="mt-2" id="error-message">Tidak dapat memuat data pengguna. Silakan login kembali.</p>
+    <button id="manual-login-btn" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+      Login Sekarang
+    </button>
+  </div>
+
+  <div class="flex flex-col items-center p-8 w-11/12 md:w-8/12 lg:w-6/12 bg-white bg-opacity-30 rounded-3xl shadow-lg border-[1.5px] border-bar">
+
+    <!-- FOTO -->
+    <label class="relative cursor-pointer">
+      <img id="profile-image" src="../assets/pp.webp"
+           class="w-24 h-24 rounded-full object-cover bg-gray-200"/>
+      <input type="file" id="profile-picture" accept="image/*" hidden>
+      <span class="absolute bottom-0 right-0 bg-white rounded-full p-1 text-green-600">
+        <i class="fa fa-edit"></i>
+      </span>
+    </label>
+
+    <!-- FORM -->
+    <form class="w-full mt-6 space-y-4" id="settings-form">
+      <div class="flex gap-6">
+        <div class="flex flex-col w-1/2">
+          <label class="text-gray-700 font-semibold mb-1">Nama</label>
+          <input id="name" type="text" class="p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500" required>
         </div>
-
-        <!-- Form Fields -->
-        <form id="settings-form" class="w-max mt-6 space-y-4">
-            <div class="flex flex-row justify-center space-x-7">
-                <div class="flex flex-col">
-                    <label class="text-gray-600" for="name">Nama</label>
-                    <input type="text" id="name" class="max-w-96 p-2 border rounded-lg" placeholder="Nama" required>
-                </div>
-                <div class="flex flex-col">
-                    <label class="text-gray-600" for="username">Username</label>
-                    <input type="text" id="username" class="w-full p-2 border rounded-md" placeholder="Username" required>
-                </div>
-            </div>
-            <div class="flex flex-row justify-center space-x-7">
-                <div class="flex flex-col">
-                    <label class="text-gray-600" for="email">Alamat E-mail</label>
-                    <input type="email" id="email" class="w-full p-2 border rounded-md" placeholder="Alamat E-mail">
-                </div>
-                <div class="flex flex-col">
-                    <label class="text-gray-600" for="phone">Nomor Telepon</label>
-                    <input type="tel" id="phone" class="w-full p-2 border rounded-md" placeholder="+62" required>
-                </div>
-            </div>
-          
-
-           
-        </form>
-
-
-         <!-- Buttons -->
-        <div class="flex justify-between w-full mt-6 space-x-4">
-            <button onclick="deleteAccount()" class="flex-1 py-2 bg-custom4 text-white rounded-full hover:bg-red-900">Hapus Akun</button>
-            <button onclick="saveProfile()" class="flex-1 py-2 bg-custom1 text-white rounded-full hover:bg-green-900">Simpan</button>
+        <div class="flex flex-col w-1/2">
+          <label class="text-gray-700 font-semibold mb-1">Username</label>
+          <input id="username" type="text" class="p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500" required>
         </div>
+      </div>
+
+      <div class="flex gap-6">
+        <div class="flex flex-col w-1/2">
+          <label class="text-gray-700 font-semibold mb-1">Email</label>
+          <input id="email" type="email" class="p-2 rounded-lg border bg-gray-100" disabled>
+        </div>
+        <div class="flex flex-col w-1/2">
+          <label class="text-gray-700 font-semibold mb-1">Telepon</label>
+          <input id="phone" type="tel" class="p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+      </div>
+    </form>
+
+    <div class="flex w-full gap-4 mt-6">
+      <button id="delete-btn" class="flex-1 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
+        Hapus Akun
+      </button>
+      <button id="save-btn" class="flex-1 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition">
+        Simpan
+      </button>
     </div>
-    </section>
-        
-    </div>
-    </section>
-    <script>
-       
-    // Fungsi untuk memuat data profil pengguna
-    function loadProfileData() {
-    const name = localStorage.getItem("profileName") || "Nama User";
-    const username = localStorage.getItem("username") || "username";
-    const email = localStorage.getItem("email") || "";
-    const phone = localStorage.getItem("phone") || "";
-    const profileImage = localStorage.getItem("profileImage") || "../assets/pp.webp";
 
-    // Tampilkan data ke form
-    document.getElementById("name").value = name;
-    document.getElementById("username").value = username;
-    document.getElementById("email").value = email;
-    document.getElementById("phone").value = phone;
-    document.getElementById("profile-image").src = profileImage;
+    <div id="loading-message" class="mt-4 text-center text-gray-600 hidden"></div>
+  </div>
+</section>
 
-    console.log("Profil pengguna berhasil dimuat dari localStorage.");
-    }
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-    // Fungsi untuk menyimpan gambar profil yang diunggah
-    function previewProfilePicture(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById("profile-image").src = e.target.result;
-                localStorage.setItem("profileImage", e.target.result); // Simpan gambar profil di localStorage
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+const firebaseConfig = {
+  apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+  authDomain: "dialek-6a219.firebaseapp.com",
+  projectId: "dialek-6a219",
+  storageBucket: "dialek-6a219.firebasestorage.app",
+  messagingSenderId: "423916223695",
+  appId: "1:423916223695:web:449bd44c54cad998d8cbba"
+};
 
-    // Fungsi untuk menyimpan profil ke database
-    async function saveProfile() {
-        const firebaseUid = localStorage.getItem("firebase_uid");
-        const name = document.getElementById("name").value.trim();
-        const username = document.getElementById("username").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const profileImage = localStorage.getItem("profileImage") || "../assets/pp.webp";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-    if (!firebaseUid) {
-        alert("Firebase UID tidak ditemukan. Silakan login ulang.");
-        window.location.href = "login.html";
-        return;
-    }
+let currentUser = null;
 
-    if (!name || !username || !email || !phone) {
-        alert("Nama, username, email, dan nomor telepon wajib diisi.");
-        return;
-    }
+const elements = {
+  nameInput: document.getElementById('name'),
+  usernameInput: document.getElementById('username'),
+  emailInput: document.getElementById('email'),
+  phoneInput: document.getElementById('phone'),
+  profileImage: document.getElementById('profile-image'),
+  profilePicture: document.getElementById('profile-picture'),
+  saveBtn: document.getElementById('save-btn'),
+  deleteBtn: document.getElementById('delete-btn'),
+  homeBtn: document.getElementById('home'),
+  loadingMsg: document.getElementById('loading-message'),
+  loadingOverlay: document.getElementById('loading-overlay'),
+  errorBanner: document.getElementById('error-banner'),
+  errorMessage: document.getElementById('error-message'),
+  manualLoginBtn: document.getElementById('manual-login-btn'),
+  settingsForm: document.getElementById('settings-form')
+};
 
-    try {
-        const response = await fetch("../php/updateProfile.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ firebase_uid: firebaseUid, name, username, email, phone, profileImage }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert("Profil berhasil diperbarui.");
-            localStorage.setItem("profileName", name);
-            localStorage.setItem("username", username);
-            localStorage.setItem("email", email);
-            localStorage.setItem("phone", phone);
-        } else {
-            alert("Gagal memperbarui profil: " + result.message);
-        }
-    } catch (error) {
-        alert("Terjadi kesalahan: " + error.message);
-    }
+function hideLoadingOverlay() {
+  elements.loadingOverlay.style.display = 'none';
 }
 
-    // Fungsi untuk menghapus akun
-    function deleteAccount() {
-    if (confirm("Apakah Anda yakin ingin menghapus akun ini?")) {
-        localStorage.clear(); 
-        alert("Akun berhasil dihapus!");
-        window.location.href = "signup.html"; 
-    }
+function showErrorBanner(message) {
+  elements.errorMessage.textContent = message;
+  elements.errorBanner.classList.add('show');
+  hideLoadingOverlay();
 }
 
-    // Fungsi untuk memuat data pengguna saat halaman dimuat
-    document.addEventListener("DOMContentLoaded", async () => {
-    const firebaseUid = localStorage.getItem("firebase_uid");
+function hideErrorBanner() {
+  elements.errorBanner.classList.remove('show');
+}
 
+function showStatus(message, isLoading = false) {
+  if (isLoading) {
+    elements.loadingMsg.textContent = message;
+    elements.loadingMsg.classList.remove('hidden');
+    elements.saveBtn.disabled = true;
+    elements.deleteBtn.disabled = true;
+  } else {
+    elements.loadingMsg.classList.add('hidden');
+    elements.saveBtn.disabled = false;
+    elements.deleteBtn.disabled = false;
+  }
+}
 
-    try {
-        const response = await fetch(`../php/getUserData.php?firebase_uid=${firebaseUid}`);
-        const result = await response.json();
+// ✅ NO AUTO-REDIRECT - Hanya tampilkan error banner
+onAuthStateChanged(auth, async (user) => {
+  console.log("🔥 Auth state:", user ? `User: ${user.email}` : "No user");
 
-        if (result.success) {
-            const userData = result.data;
+  if (!user) {
+    console.warn("⚠️ No user found - showing error banner");
+    showErrorBanner("Sesi login tidak ditemukan. Silakan login terlebih dahulu.");
+    return; // ✅ TIDAK ADA REDIRECT!
+  }
 
-            // Tampilkan data di halaman
-            document.getElementById("name").value = userData.name || "";
-            document.getElementById("username").value = userData.username || "";
-            document.getElementById("email").value = userData.email || "";
-            document.getElementById("phone").value = userData.phone || "";
-            document.getElementById("profile-image").src = userData.profile_image || "../assets/pp.webp";
-        } else {
-            alert("Gagal memuat data pengguna: " + result.message);
-        }
-    } catch (error) {
-        alert("Terjadi kesalahan: " + error.message);
+  currentUser = user;
+  hideErrorBanner();
+  console.log("✅ User authenticated:", user.uid);
+
+  try {
+    // Set email
+    elements.emailInput.value = user.email || '';
+
+    // Load dari Firestore
+    console.log("📥 Loading user data...");
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      console.log("✅ User data loaded:", userData);
+      
+      elements.nameInput.value = userData.name || '';
+      elements.usernameInput.value = userData.username || '';
+      elements.phoneInput.value = userData.phone || '';
+      
+      const imageUrl = userData.profile_image || '../assets/pp.webp';
+      elements.profileImage.src = imageUrl;
+      
+      hideLoadingOverlay();
+    } else {
+      console.warn("⚠️ User document not found");
+      hideLoadingOverlay();
+      showErrorBanner("Data profil tidak ditemukan di database.");
     }
+  } catch (error) {
+    console.error("❌ Error loading profile:", error);
+    hideLoadingOverlay();
+    showErrorBanner("Gagal memuat profil: " + error.message);
+  }
 });
 
-    // Muat data profil dari localStorage saat halaman pertama kali dimuat
-    loadProfileData();
+// Manual login button
+elements.manualLoginBtn.addEventListener('click', () => {
+  window.location.href = "./masuk.html";
+});
 
-    </script>
+// ================= UPLOAD IMAGE =================
+elements.profilePicture.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!currentUser) {
+    alert('Silakan login terlebih dahulu');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Ukuran file maksimal 5MB');
+    return;
+  }
+
+  if (!file.type.startsWith('image/')) {
+    alert('File harus berupa gambar');
+    return;
+  }
+
+  try {
+    showStatus('Mengunggah foto...', true);
     
+    const imageRef = ref(storage, `profile/${currentUser.uid}_${Date.now()}.jpg`);
+    await uploadBytes(imageRef, file);
+    const url = await getDownloadURL(imageRef);
     
+    elements.profileImage.src = url;
+    
+    await setDoc(doc(db, "users", currentUser.uid), {
+      profile_image: url,
+      updated_at: new Date().toISOString()
+    }, { merge: true });
+    
+    showStatus('');
+    alert('Foto profil berhasil diperbarui');
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+    showStatus('');
+    alert("Gagal mengunggah foto: " + error.message);
+  }
+});
+
+// ================= SAVE PROFILE =================
+elements.saveBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  
+  if (!currentUser) {
+    alert("Silakan login terlebih dahulu");
+    elements.manualLoginBtn.click();
+    return;
+  }
+
+  const name = elements.nameInput.value.trim();
+  const username = elements.usernameInput.value.trim();
+  const phone = elements.phoneInput.value.trim();
+
+  if (!name || !username) {
+    alert("Nama dan username harus diisi");
+    return;
+  }
+
+  if (username.length < 3) {
+    alert("Username minimal 3 karakter");
+    return;
+  }
+
+  try {
+    showStatus('Menyimpan profil...', true);
+    
+    const profileData = {
+      name,
+      username: username.toLowerCase(),
+      phone,
+      email: currentUser.email,
+      profile_image: elements.profileImage.src,
+      updated_at: new Date().toISOString()
+    };
+
+    await setDoc(doc(db, "users", currentUser.uid), profileData, { merge: true });
+
+    localStorage.setItem('name', name);
+    localStorage.setItem('username', username);
+    localStorage.setItem('phone', phone);
+
+    showStatus('');
+    alert("Profil berhasil diperbarui!");
+  } catch (error) {
+    console.error("❌ Save error:", error);
+    showStatus('');
+    alert("Gagal menyimpan profil: " + error.message);
+  }
+});
+
+// ================= DELETE ACCOUNT =================
+elements.deleteBtn.addEventListener('click', async () => {
+  if (!currentUser) {
+    alert("Silakan login terlebih dahulu");
+    elements.manualLoginBtn.click();
+    return;
+  }
+
+  const confirmed = confirm(
+    "⚠️ PERINGATAN!\n\n" +
+    "Apakah Anda yakin ingin menghapus akun?\n\n" +
+    "• Semua data akan hilang permanen\n" +
+    "• Tindakan ini TIDAK DAPAT DIBATALKAN\n\n" +
+    "Ketik 'HAPUS' pada prompt berikutnya untuk konfirmasi."
+  );
+  
+  if (!confirmed) return;
+
+  const confirmText = prompt("Ketik 'HAPUS' untuk mengkonfirmasi:");
+  
+  if (confirmText !== 'HAPUS') {
+    alert("Penghapusan akun dibatalkan");
+    return;
+  }
+
+  try {
+    showStatus('Menghapus akun...', true);
+    
+    await deleteDoc(doc(db, "users", currentUser.uid));
+    await deleteUser(currentUser);
+    
+    localStorage.clear();
+    
+    alert("Akun berhasil dihapus");
+    window.location.href = "./daftar.html";
+  } catch (error) {
+    console.error("❌ Delete error:", error);
+    showStatus('');
+    
+    if (error.code === 'auth/requires-recent-login') {
+      alert("Untuk keamanan, Anda harus login kembali sebelum menghapus akun.");
+      window.location.href = "./masuk.html";
+    } else {
+      alert("Gagal menghapus akun: " + error.message);
+    }
+  }
+});
+
+// ================= NAVIGATION =================
+elements.homeBtn.addEventListener('click', () => {
+  window.location.href = "./akun-pengguna.html";
+});
+
+elements.settingsForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+});
+
+console.log("✅ Pengaturan page loaded - NO AUTO-REDIRECT");
+</script>
 
 </body>
 </html>

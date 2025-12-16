@@ -3,287 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialek.id</title>
+    <title>Dialek.id - Daftar</title>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <link rel="stylesheet" href="../styles/style2.css">
+    <link rel="stylesheet" href="/src/styles/style2.css">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         .input-container {
             position: relative;
         }
-        
         .input-container input {
             background-color: transparent;
             padding-left: 2.5rem; 
             padding-right: 10px; 
         }
-        
         .input-container ion-icon {
             position: absolute;
             left: 10px; 
+            top: 50%;
+            transform: translateY(-50%);
             color: black;
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
         }
     </style>
 </head>
-<body class="bg-custom-radial font-inter flex flex-col min-h-screen ">
+<body class="bg-custom-radial font-inter flex flex-col min-h-screen">
     <nav class="flex items-center justify-between w-full p-12">
         <div id="landing-page" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
     </nav>
-<section class="main flex flex-col mx-auto w-2/3 flex-grow">
-    <div class="flex items-center justify-center px-4">
-        <div class="bg-shadow p-6 rounded-lg">
-            <h2 class="text-gradient text-4xl font-bold text-center mb-6 w-full">Daftar</h2>
-            <form id="signup-form" >
-                <div class="mb-4">
-                    <label class="block text-custom2 text-lg font-semibold mb-2" for="nama">Nama</label>
-                    <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
-                        <input type="text" name="name" id="name" placeholder="John Doe" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" aria-label="Name" />
-                        <ion-icon name="person" class="pr-4  items-center"></ion-icon>
+
+    <section class="main flex flex-col mx-auto w-2/3 flex-grow">
+        <div class="flex items-center justify-center px-4">
+            <div class="bg-shadow p-6 rounded-lg w-full max-w-md">
+                <h2 class="text-gradient text-4xl font-bold text-center mb-6 w-full">Daftar</h2>
+                <form id="signup-form">
+                    <div class="mb-4">
+                        <label class="block text-custom2 text-lg font-semibold mb-2" for="name">Nama</label>
+                        <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
+                            <input type="text" name="name" id="name" placeholder="John Doe" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
+                            <ion-icon name="person" class="pr-4"></ion-icon>
+                        </div>
+                        <p class="error-message" id="name-error">Nama harus diisi</p>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-custom2 text-lg font-semibold mb-2" for="username">Nama Pengguna</label>
-                    <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
-                        <input type="text" name="username" id="username" placeholder="johndoe_2112" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" aria-label="Username" />
-                        <ion-icon name="person" class="pr-4  items-center"></ion-icon>
+                    
+                    <div class="mb-4">
+                        <label class="block text-custom2 text-lg font-semibold mb-2" for="username">Nama Pengguna</label>
+                        <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
+                            <input type="text" name="username" id="username" placeholder="johndoe_2112" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
+                            <ion-icon name="person" class="pr-4"></ion-icon>
+                        </div>
+                        <p class="error-message" id="username-error">Username harus diisi</p>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-custom2 text-lg font-semibold mb-2" for="email">E-mail</label>
-                    <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
-                        <input type="email" name="email" id="email" placeholder="nama@domain.com" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" aria-label="Email" />
-                        <ion-icon name="mail" class="pr-4  items-center"></ion-icon>
+                    
+                    <div class="mb-4">
+                        <label class="block text-custom2 text-lg font-semibold mb-2" for="email">E-mail</label>
+                        <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
+                            <input type="email" name="email" id="email" placeholder="nama@domain.com" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
+                            <ion-icon name="mail" class="pr-4"></ion-icon>
+                        </div>
+                        <p class="error-message" id="email-error">Email tidak valid</p>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-custom2 text-lg font-semibold mb-2" for="password">Kata Sandi</label>
-                    <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
-                        <input type="password" name="password" id="password" placeholder="*" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" aria-label="Password" />
-                        <ion-icon name="lock-closed" class="pr-4  items-center"></ion-icon>
+                    
+                    <div class="mb-4">
+                        <label class="block text-custom2 text-lg font-semibold mb-2" for="password">Kata Sandi</label>
+                        <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
+                            <input type="password" name="password" id="password" placeholder="Minimal 6 karakter" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
+                            <ion-icon name="lock-closed" class="pr-4"></ion-icon>
+                        </div>
+                        <p class="error-message" id="password-error">Kata sandi minimal 6 karakter</p>
                     </div>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-custom2 text-lg font-semibold mb-2" for="confirmPassword">Konfirmasi Kata Sandi</label>
-                    <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
-                        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" aria-label="Confirm Password" />
-                        <ion-icon name="lock-closed" class="pr-4  items-center"></ion-icon>
+                    
+                    <div class="mb-6">
+                        <label class="block text-custom2 text-lg font-semibold mb-2" for="confirmPassword">Konfirmasi Kata Sandi</label>
+                        <div class="input-container flex items-center bg-bg-form border border-gray-300 rounded-lg">
+                            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Ulangi kata sandi" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
+                            <ion-icon name="lock-closed" class="pr-4"></ion-icon>
+                        </div>
+                        <p class="error-message" id="confirm-error">Kata sandi tidak cocok</p>
                     </div>
-                </div>
-                <div class="text-center">
-                    <button type="submit" name="register" class="text-lg py-2 bg-custom-green-button w-40 text-white font-bold rounded-lg shadow-0 hover:bg-custom-green-button hover:opacity-80">Daftar</button>
-                </div>
-                <div class="my-4 flex items-center">
-                    <hr class="flex-grow border-t border-black" />
-                    <span class="mx-4 text-black">atau</span>
-                    <hr class="flex-grow border-t border-black" />
-                </div>
-                <div class="flex flex-col space-y-3">
-                    <div class="relative w-full">
-                        <button type="button" id="googleLogin" class="flex justify-center items-center w-full py-2 border border-green-600 rounded-full text-green-700 hover:bg-green-50 transition duration-300">Daftar dengan akun Google</button>
-                        <img src="../assets/Google.webp" alt="Google Logo" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-6 w-6" />
+                    
+                    <div class="text-center">
+                        <button type="submit" id="signup-btn" class="text-lg py-2 bg-custom-green-button w-40 text-white font-bold rounded-lg shadow-0 hover:bg-custom-green-button hover:opacity-80 transition">
+                            Daftar
+                        </button>
                     </div>
-                    <div class="relative w-full">
-                        <button type="button" id="facebookLogin" class="flex justify-center items-center w-full py-2 border border-green-600 rounded-full text-green-700 hover:bg-green-50 transition duration-300">Daftar dengan akun Facebook</button>
-                        <img src="../assets/Facebook.webp" alt="Facebook Logo" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-6 w-6" />
+                    
+                    <div class="my-4 flex items-center">
+                        <hr class="flex-grow border-t border-black" />
+                        <span class="mx-4 text-black">atau</span>
+                        <hr class="flex-grow border-t border-black" />
                     </div>
-                </div>
-                <div class="text-center mt-4">
-                    <p class="text-black">Sudah Punya Akun? <a href="./masuk.html" class="text-custom1 font-bold hover:underline">Masuk</a></p>
-                </div>
-            </form>
+                    
+                    <div class="flex flex-col space-y-3">
+                        <div class="relative w-full">
+                            <button type="button" id="googleLogin" class="flex justify-center items-center w-full py-2 border border-green-600 rounded-full text-green-700 hover:bg-green-50 transition duration-300">
+                                Daftar dengan akun Google
+                            </button>
+                            <img src="/src/assets/Google.webp" alt="Google Logo" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-6 w-6" />
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-black">Sudah Punya Akun? <a href="masuk.html" class="text-custom1 font-bold hover:underline">Masuk</a></p>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-</section>
-<script  type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    </section>
 
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
-    authDomain: "dialek-6a219.firebaseapp.com",
-    projectId: "dialek-6a219",
-    storageBucket: "dialek-6a219.appspot.com",
-    messagingSenderId: "423916223695",
-    appId: "1:423916223695:web:449bd44c54cad998d8cbba",
-    measurementId: "G-4SLBH47WTM"
-};
+    <script type="module">
+        AOS.init();
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// Manual Signup
-document.getElementById("signup-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
+        };
 
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
 
-    if (!name || !email || !username || !password || !confirmPassword) {
-        alert("Semua field wajib diisi.");
-        return;
-    }
+        function generateRandomUsername(length = 7) {
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
 
-    if (password !== confirmPassword) {
-        alert("Kata sandi dan konfirmasi kata sandi tidak cocok.");
-        return;
-    }
+        async function usernameExists(username) {
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('username', '==', username.toLowerCase()));
+            const querySnapshot = await getDocs(q);
+            return !querySnapshot.empty;
+        }
 
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        function validateForm() {
+            let isValid = true;
+            const name = document.getElementById('name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        const response = await fetch("../php/signup.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                firebase_uid: user.uid,
-                name,
-                email,
-                username,
-                profile_image: "default_profile_image_url", 
-                password,
-            }),
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+            if (!name) {
+                document.getElementById('name-error').classList.add('show');
+                isValid = false;
+            }
+
+            if (!username || username.length < 3) {
+                document.getElementById('username-error').textContent = 'Username minimal 3 karakter';
+                document.getElementById('username-error').classList.add('show');
+                isValid = false;
+            }
+
+            if (!email || !email.includes('@')) {
+                document.getElementById('email-error').classList.add('show');
+                isValid = false;
+            }
+
+            if (password.length < 6) {
+                document.getElementById('password-error').classList.add('show');
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-error').classList.add('show');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value.trim();
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            const btn = document.getElementById('signup-btn');
+            btn.classList.add('loading');
+            btn.textContent = 'Mendaftar...';
+
+            try {
+                if (await usernameExists(username)) {
+                    alert('Username sudah digunakan!');
+                    btn.classList.remove('loading');
+                    btn.textContent = 'Daftar';
+                    return;
+                }
+
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await updateProfile(user, {
+                    displayName: name
+                });
+
+                // ✅ FIX: Tambah field yang diperlukan
+                await setDoc(doc(db, 'users', user.uid), {
+                    name: name,
+                    username: username,
+                    email: email,
+                    phone: '',
+                    profile_image: '/src/assets/pp.webp',
+                    firebase_uid: user.uid,
+                    created_at: new Date().toISOString(),
+                    total_exp: 0,
+                    level: 1,
+                    study_duration: 0
+                });
+
+                localStorage.setItem('firebase_uid', user.uid);
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                localStorage.setItem('name', name);
+
+                alert('Pendaftaran berhasil!');
+                // ✅ FIX: Perbaiki path ke dashboard yang benar
+                window.location.href = "/src/html/dashboard-batak.html";
+            } catch (error) {
+                console.error('Error:', error);
+                btn.classList.remove('loading');
+                btn.textContent = 'Daftar';
+
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('Email sudah digunakan!');
+                } else if (error.code === 'auth/invalid-email') {
+                    alert('Email tidak valid!');
+                } else if (error.code === 'auth/weak-password') {
+                    alert('Kata sandi terlalu lemah!');
+                } else {
+                    alert('Terjadi kesalahan: ' + error.message);
+                }
+            }
         });
 
-        const result = await response.json();
-        if (result.success) {
-            // Save user data in localStorage
-            localStorage.setItem("firebase_uid", user.uid);
-            localStorage.setItem("username", result.username);
-            localStorage.setItem("profileImage", result.profile_image); 
-            localStorage.setItem("email", email);
-            localStorage.setItem("profileName", result.name);
-            alert("Signup berhasil!");
-            window.location.href = "dashboardBatak.html";
-        } else {
-            alert(result.message);
-        }
-    } catch (error) {
-        alert("Error: " + error.message);
-    }
-});
+        document.getElementById('googleLogin').addEventListener('click', async () => {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
 
-// Google Signup
-document.getElementById("googleLogin").addEventListener("click", async () => {
-    try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
+                let username = generateRandomUsername();
+                while (await usernameExists(username)) {
+                    username = generateRandomUsername();
+                }
 
-        const response = await fetch("../php/signup.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                firebase_uid: user.uid,
-                name: user.displayName || "User",
-                email: user.email,
-                profile_image: user.photoURL || "default_profile_image_url",
-                username: null, 
-                password: null, 
-            }),
+                // ✅ FIX: Tambah field yang diperlukan
+                await setDoc(doc(db, 'users', user.uid), {
+                    name: user.displayName || 'User',
+                    username: username,
+                    email: user.email,
+                    phone: '',
+                    profile_image: user.photoURL || '/src/assets/pp.webp',
+                    firebase_uid: user.uid,
+                    created_at: new Date().toISOString(),
+                    total_exp: 0,
+                    level: 1,
+                    study_duration: 0
+                });
+
+                localStorage.setItem('firebase_uid', user.uid);
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', user.email);
+                localStorage.setItem('name', user.displayName || 'User');
+
+                alert('Pendaftaran berhasil dengan Google!');
+                // ✅ FIX: Perbaiki path ke dashboard yang benar
+                window.location.href = "/src/html/dashboard-batak.html";
+            } catch (error) {
+                console.error('Google Signup Error:', error);
+                alert('Terjadi kesalahan: ' + error.message);
+            }
         });
 
-        const resultData = await response.json();
-        if (resultData.success) {
-            // Save user data in localStorage
-            localStorage.setItem("firebase_uid", user.uid);
-            localStorage.setItem("username", resultData.username);
-            localStorage.setItem("profileImage", resultData.profile_image);
-            localStorage.setItem("email", user.email);
-            lodalStorage.setItem("profileName", result.name);
-            alert("Signup berhasil!");
-            window.location.href = "dashboardBatak.html";
-        } else {
-            alert(resultData.message);
-        }
-    } catch (error) {
-        alert("Google Signup Error: " + error.message);
-    }
-});
-
-// Manual Login
-document.getElementById("login-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const login = document.getElementById("login").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!login || !password) {
-        alert("Email/Username dan kata sandi wajib diisi.");
-        return;
-    }
-
-    try {
-        const response = await fetch("../php/login.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: login, password: password }), 
+        document.getElementById('landing-page').addEventListener('click', () => {
+            window.location.href = "/index.html";
         });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Save user data in localStorage
-            localStorage.setItem("firebase_uid", result.user.firebase_uid);
-            localStorage.setItem("username", result.user.username);
-            localStorage.setItem("profileName", result.user.profile_name);
-            localStorage.setItem("profileImage", result.user.profile_image);
-            localStorage.setItem("email", result.user.email);
-
-            alert("Login berhasil!");
-            window.location.href = "dashboardBatak.html";
-        } else {
-            alert("Login gagal: " + result.message);
-        }
-    } catch (error) {
-        alert("Terjadi kesalahan saat login: " + error.message);
-    }
-});
-
-// Google Login
-document.getElementById("google-login").addEventListener("click", async () => {
-    try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        // Get ID token from Firebase user
-        const idToken = await user.getIdToken();
-
-        const response = await fetch("../php/login.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                firebase_uid: user.uid,  
-                id_token: idToken, 
-            }),
-        });
-
-        const resultData = await response.json();
-
-        if (resultData.success) {
-            // Save user data in localStorage and redirect
-            localStorage.setItem("firebase_uid", user.uid);
-            localStorage.setItem("username", resultData.user.username);
-            localStorage.setItem("profileImage", resultData.user.profile_image);
-            localStorage.setItem("email", user.email);
-            localStorage.setItem("profileName", resultData.user.profile_name);
-            alert("Login berhasil!");
-            window.location.href = "dashboardBatak.html";
-        } else {
-            alert("Login gagal: " + resultData.message);
-        }
-    } catch (error) {
-        alert("Google Login Error: " + error.message);
-    }
-});
-
-</script>
+    </script>
 </body>
 </html>

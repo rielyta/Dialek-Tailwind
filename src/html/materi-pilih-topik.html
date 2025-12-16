@@ -1,13 +1,9 @@
-<!-- <?php
-    require '.functions.php';
-?> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialek.Id</title>
+    <title>Dialek.Id - Materi</title>
     <link rel="stylesheet" href="../styles/style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -20,9 +16,20 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
             transition: left 0.4s ease;
             z-index: 1000;
+            width: 15rem;
+            height: 100%;
         }
         #sidebar.open {
             left: 0;
+        }
+        .button-lock {
+            background-color: #d1d5db;
+            color: #6b7280;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -30,23 +37,25 @@
     <nav class="flex items-center justify-between w-full px-12 py-12">
         <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
         <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
-            <p id="account-username" class="px-4 text-xl">username</p>
+            <p id="account-username" class="px-4 text-xl">memuat...</p>
             <i class="fa-solid fa-user text-2xl"></i> 
         </div>
     </nav>
-    <div id="sidebar" class="fixed bg-white w-60 h-full">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-white">
         <div class="flex items-center justify-between w-full px-12 py-12">
-            <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
+            <div class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
         </div>
         <ul class="mt-4 space-y-2">
             <li>
-                <a href="../php/dashboard-batak.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a href="./dashboard-batak.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">dashboard</span>
                     <span class="text-black font-medium">Dasbor</span>
                 </a>
             </li>
             <li>
-                <a href="../php/forum-diskusi-tanya.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a href="./forum-diskusi-tanya.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">forum</span>
                     <span class="text-black font-medium">Forum Diskusi</span>
                 </a>
@@ -58,125 +67,181 @@
                 </a>
             </li>
             <li>
-                <a href="../php/permainan-hasil.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a href="./permainan-hasil.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">extension</span>
                     <span class="text-black font-medium">Permainan</span>
                 </a>
             </li>
             <li>
-                <a href="../php/literasi-budaya-level.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a href="./literasi-budaya-level.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">auto_stories</span>
                     <span class="text-black font-medium">Literasi Budaya</span>
                 </a>
             </li>
             <li>
-                <a href="../php/kosakata-model1.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a href="./kosakata-model1.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">note_stack</span>
                     <span class="text-black font-medium">Kosakata</span>
                 </a>
             </li>
             <li>
-                <a id="logout-button" href="../../index.php" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
+                <a id="logout-button" href="javascript:void(0);" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
                     <span class="material-symbols-outlined text-custom1">logout</span>
                     <span class="text-black font-medium">Keluar</span>
                 </a>
             </li>
         </ul>
     </div>
+
     <section class="main flex flex-col mx-auto w-4/5 items-center flex-grow space-y-16">
-            <div class="flex justify-center items-center mb-12">
-                <h1 class="h3 md:text-4xl lg:text-4xl font-bold text-gradient">Materi</h1>
+        <div class="flex justify-center items-center mb-12">
+            <h1 class="h3 md:text-4xl lg:text-4xl font-bold text-gradient">Materi</h1>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10 lg:gap-12 w-full px-4">
+            
+            <!-- Card 1: Subjek - AKTIF -->
+            <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
+                <img src="../assets/profileSubjek.webp" alt="profile-subjek" class="w-16 h-16 rounded-full md:w-20 md:h-20 flex items-center justify-center"/>
+                <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
+                    <span class="text-2xl md:text-xl font-semibold text-gray-700">Subjek</span>
+                    <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+                        <div id="progress-subjek" class="progress-bar w-0 h-full bg-custom-gradient2-button"></div>
+                    </div>
+                </div>
+                <button id="masuk-materi" class="button-custom w-1/4">Mulai</button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10 lg:gap-12 w-full px-4">
-                <!-- Card 1: Subjek -->
-                <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
-                    <img src="..\assets\profileSubjek.webp" alt="profile-subjek" class="w-16 h-16 rounded-full md:w-20 md:h-20 flex items-center justify-center"/>
-                    <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
-                        <span class="text-2xl md:text-xl font-semibold text-gray-700">Subjek</span>
-                        <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
-                          <div class="progress-bar w-1/2 h-full bg-custom-gradient2-button"></div>
-                        </div>
-                      </div>
-                    <button id="masuk-materi" class="button-custom w-1/4">Mulai</button>
+
+            <!-- Card 2: Kata Kerja - TERKUNCI -->
+            <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
+                <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
+                    <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
                 </div>
-            
-                <!-- Card 2: Kata Kerja -->
-                <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
-                    <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
-                        <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
+                <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
+                    <span class="text-2xl md:text-xl font-semibold text-gray-700">Kata Kerja</span>
+                    <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+                        <div class="progress-bar w-0 h-full"></div>
                     </div>
-                    <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
-                        <span class="text-2xl md:text-xl font-semibold text-gray-700">Kata Kerja</span>
-                        <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
-                          <div class="progress-bar w-1/2 h-full bg-custom-gradient2-button"></div>
-                        </div>
-                      </div>
-                    <button class="button-lock w-1/4">Mulai</button>
                 </div>
-            
-                <!-- Card 3: Kata Benda -->
-                <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
-                    <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
-                        <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
-                    </div>
-                    <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
-                        <span class="text-2xl md:text-xl font-semibold text-gray-700">Kata Benda</span>
-                        <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
-                          <div class="progress-bar w-1/2 h-full bg-custom-gradient2-button"></div>
-                        </div>
-                      </div>
-                    <button class="button-lock w-1/4">Mulai</button>
-                </div>
-            
-                <!-- Card 4: Angka, Bilangan, dan Satuan -->
-                <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
-                    <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
-                        <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
-                    </div>
-                    <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
-                        <span class="text-2xl md:text-xl font-semibold text-gray-700">Bilangan</span>
-                        <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
-                          <div class="progress-bar w-1/2 h-full bg-custom-gradient2-button"></div>
-                        </div>
-                      </div>
-                    <button class="button-lock w-1/4">Mulai</button>
-                </div>
+                <button class="button-lock w-1/4">Mulai</button>
             </div>
+
+            <!-- Card 3: Kata Benda - TERKUNCI -->
+            <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
+                <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
+                    <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
+                </div>
+                <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
+                    <span class="text-2xl md:text-xl font-semibold text-gray-700">Kata Benda</span>
+                    <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+                        <div class="progress-bar w-0 h-full"></div>
+                    </div>
+                </div>
+                <button class="button-lock w-1/4">Mulai</button>
+            </div>
+
+            <!-- Card 4: Bilangan - TERKUNCI -->
+            <div class="flex items-center justify-between px-6 py-6 rounded-2xl border border-bar shadow-md w-full">
+                <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gray-300 rounded-full">
+                    <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
+                </div>
+                <div class="flex flex-col gap-3 w-1/2 md:w-6/12">
+                    <span class="text-2xl md:text-xl font-semibold text-gray-700">Bilangan</span>
+                    <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+                        <div class="progress-bar w-0 h-full"></div>
+                    </div>
+                </div>
+                <button class="button-lock w-1/4">Mulai</button>
+            </div>
+
+        </div>
     </section>
+
     <footer class="flex items-center justify-between w-full px-4 py-4">
         <button id="kembali-button" class="button-custom2 text-sm mx-6">
             Kembali
         </button>
     </footer>
-    <script>
-        const profile = document.getElementById("profile-button");
-        profile.addEventListener("click", () => {
-            window.location.href = "../php/AkunUser.php";
-        });
 
-        // Sidebar toggle function
-        function toggleSidebar() {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Toggle Sidebar Function
+        window.toggleSidebar = function() {
             const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("open");  // Toggle the 'open' class to show or hide the sidebar
-        }
+            sidebar.classList.toggle("open");
+        };
 
-        const kembaliButton = document.getElementById("kembali-button");
-        kembaliButton.addEventListener("click", () => {
-            window.location.href = "../php/dashboard-batak.php";
+        // Check authentication and load user data
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        document.getElementById('account-username').textContent = userData.username || 'User';
+                        
+                        // Load progress for Subjek (example: 50%)
+                        const progress = (userData.materi_subjek_progress || 0);
+                        document.getElementById('progress-subjek').style.width = progress + '%';
+                    }
+                } catch (error) {
+                    console.error("Error loading user data:", error);
+                }
+            } else {
+                alert("Silakan login terlebih dahulu");
+                window.location.href = "../../masuk.html";
+            }
         });
 
-        const pageMateri = document.getElementById("masuk-materi");
-        pageMateri.addEventListener("click", () => {
-            window.location.href = "../php/rating_materi/rating_subjek.php";
+        // Navigation handlers
+        document.getElementById("profile-button").addEventListener("click", () => {
+            window.location.href = "./akun-pengguna.html";
         });
 
-        const logoutButton = document.getElementById("logout-button");
-        logoutButton.addEventListener("click", (event) => {
+        document.getElementById("masuk-materi").addEventListener("click", () => {
+            window.location.href = "./rating_materi/rating_subjek.html";
+        });
+
+        document.getElementById("kembali-button").addEventListener("click", () => {
+            window.location.href = "./dashboard-batak.html";
+        });
+
+        document.getElementById("home").addEventListener("click", () => {
+            window.location.href = "./dashboard-batak.html";
+        });
+
+        // Logout handler
+        document.getElementById("logout-button").addEventListener("click", async (event) => {
             event.preventDefault();
             const confirmed = confirm("Apakah Anda yakin ingin keluar?");
             if (confirmed) {
-                window.location.href = "/index.html";
+                try {
+                    await signOut(auth);
+                    window.location.href = "../../index.html";
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    alert("Gagal logout. Silakan coba lagi.");
+                }
             }
         });
     </script>
 </body>
+</html>

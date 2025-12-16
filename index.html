@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dialek.Id</title>
-  <link rel="stylesheet" href="./src/styles/style2.css">
+  <!-- FIX: Path absolut -->
+  <link rel="stylesheet" href="/src/styles/style2.css">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -24,8 +25,13 @@
       text-align: center;
       cursor: pointer;
       font-family: Arial, sans-serif;
-      color: #4b5563; /* Dark gray */
+      color: #4b5563;
       width: 100px;
+      transition: transform 0.3s ease;
+    }
+
+    .language-option:hover {
+      transform: scale(1.05);
     }
 
     .language-option img {
@@ -33,16 +39,16 @@
       height: 70px;
       border-radius: 50%;
       margin-bottom: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .language-option p {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
-      color: #111827; /* Dark color */
+      color: #111827;
     }
 
-    /* Section Title */
     .section-title {
       text-align: center;
       font-size: 24px;
@@ -76,18 +82,20 @@
 
       <!-- Gambar Utama -->
       <div data-aos="fade-up" class="image w-full flex justify-center mt-6 mb-6">
-        <img src="./src/assets/Pulau.webp" alt="Pulau" class="container" />
+        <img src="/src/assets/Pulau.webp" alt="Pulau" class="container" />
       </div>
 
       <!-- Section: "Pilih Bahasa Yang Ingin Dipelajari" -->
-      <div class="section-title text-lg text-custom2 flex justify-center" data-aos="fade-up" id="bahasa">Pilih Bahasa Yang Ingin Dipelajari</div>
+      <div class="section-title text-lg text-custom2 flex justify-center" data-aos="fade-up" id="bahasa">
+        Pilih Bahasa Yang Ingin Dipelajari
+      </div>
       <div class="language-selection-container text-white font-semibold flex justify-center" data-aos="fade-up">
-        <div class="language-option" data-aos="fade-right" data-aos-delay="100">
-          <img src="./src/assets/jawa.webp" alt="Jawa" id="jawa">
+        <div class="language-option" data-aos="fade-right" data-aos-delay="100" id="jawa-option">
+          <img src="/src/assets/jawa.webp" alt="Jawa">
           <p>Jawa</p>
         </div>
-        <div class="language-option" data-aos="fade-left" data-aos-delay="200">
-          <img src="./src/assets/batak.webp" alt="Batak" id="batak">
+        <div class="language-option" data-aos="fade-left" data-aos-delay="200" id="batak-option">
+          <img src="/src/assets/batak.webp" alt="Batak">
           <p>Batak Toba</p>
         </div>  
       </div>
@@ -101,14 +109,14 @@
           </p>
         </div>
         <div>
-          <img src="./src/assets/display-one.webp" alt="display 1">
+          <img src="/src/assets/display-one.webp" alt="display 1">
         </div>
       </div>
 
       <!-- Section: "Mulai dengan dialek.id" -->
       <div class="text-center p-6 flex flex-row items-center justify-center" data-aos="fade-up" data-aos-delay="400">
         <div>
-          <img src="./src/assets/display-two.webp" alt="display 2">
+          <img src="/src/assets/display-two.webp" alt="display 2">
         </div>
         <div>
           <h1 class="text-2xl font-poppins font-bold text-custom1 mb-4">Mulai dengan dialek.id</h1>
@@ -168,11 +176,10 @@
   </footer>  
 
   <script>
-    // Inisiasi animasi AOS
     AOS.init();
   
-    // Script untuk navbar smooth scrolling
     document.addEventListener("DOMContentLoaded", function() {
+      // Smooth scrolling
       document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
           e.preventDefault();
@@ -192,13 +199,13 @@
         });
       });
   
-      // Redirect ke logIn.html saat elemen dengan ID 'jawa' atau 'batak' diklik
-      document.getElementById("jawa").addEventListener("click", function() {
-        window.location.href = "./src/html/halaman-segera-hadir.html";
+      // Language selection - FIX: Path yang benar ke masuk.html
+      document.getElementById("jawa-option").addEventListener("click", function() {
+        window.location.href = "/src/html/halaman-segera-hadir.html";
       });
   
-      document.getElementById("batak").addEventListener("click", function() {
-        window.location.href = "./src/html/masuk.html";
+      document.getElementById("batak-option").addEventListener("click", function() {
+        window.location.href = "/src/html/masuk.html";
       });
     });
   </script>

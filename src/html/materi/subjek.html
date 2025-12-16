@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialek.Id - Detail Materi Subjek</title>
+    <link rel="stylesheet" href="../../styles/style2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body class="bg-custom-radial font-inter flex flex-col min-h-screen">
+    <nav class="flex items-center justify-between w-full px-12 py-12">
+        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
+        <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
+            <p id="account-username" class="px-4 text-xl">memuat...</p>
+            <i class="fa-solid fa-user text-2xl"></i> 
+        </div>
+    </nav>
+
+    <section class="main flex flex-col mx-auto w-11/12 sm:w-4/5 items-center flex-grow space-y-8 sm:space-y-16 text-xl p-8 text-custom2 min-h-[500px] h-full drop-shadow-2xl" id="content-section">
+        <div class="materi-item max-w-6xl bg-white bg-opacity-30 rounded-3xl shadow-lg font-inter border-[1.5px] border-bar">
+            <p id="material-title" class="flex justify-center text-xl sm:text-2xl md:text-3xl font-semibold pt-4 pb-3">Memuat...</p>
+            <div id="material-content" class="text-base p-4 whitespace-pre-line">Memuat konten materi...</div>
+        </div>
+    </section>
+
+    <footer class="flex items-center justify-between w-full px-4 py-4">
+        <button id="kembali-button" class="button-custom2 text-sm mx-6">Kembali</button>
+        <button id="selesai-button" class="button-custom2 text-sm mx-6">Selesai</button>
+    </footer>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Elements
+        const materialTitle = document.getElementById("material-title");
+        const materialContent = document.getElementById("material-content");
+        const kembaliButton = document.getElementById("kembali-button");
+        const selesaiButton = document.getElementById("selesai-button");
+        const homeBtn = document.getElementById("home");
+        const profileBtn = document.getElementById("profile-button");
+
+        // Material ID - dapat disesuaikan berdasarkan parameter URL jika diperlukan
+        const materiId = "subjek";
+
+        // Load material dari Firestore
+        async function loadMaterial() {
+            try {
+                const materiRef = doc(db, "materials", materiId);
+                const materiSnap = await getDoc(materiRef);
+
+                if (materiSnap.exists()) {
+                    const data = materiSnap.data();
+                    materialTitle.textContent = data.material_title || "Judul Materi";
+                    
+                    // Handle material_content
+                    if (Array.isArray(data.material_content)) {
+                        materialContent.textContent = data.material_content.join("\n\n");
+                    } else if (typeof data.material_content === "string") {
+                        materialContent.textContent = data.material_content;
+                    } else {
+                        materialContent.textContent = "Konten materi tidak ditemukan";
+                    }
+                } else {
+                    materialTitle.textContent = "Materi Tidak Ditemukan";
+                    materialContent.textContent = "Materi yang Anda cari tidak tersedia. Silakan hubungi admin.";
+                    console.warn(`Document "${materiId}" tidak ditemukan di collection "materials"`);
+                }
+            } catch (error) {
+                console.error("Error loading material:", error);
+                materialTitle.textContent = "❌ Error";
+                materialContent.textContent = `Gagal memuat materi. Error: ${error.message}\n\nSilakan coba lagi atau hubungi admin.`;
+            }
+        }
+
+        // Check authentication and load user data
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        document.getElementById('account-username').textContent = userData.username || 'User';
+                        
+                        // Load material setelah user data loaded
+                        loadMaterial();
+                    }
+                } catch (error) {
+                    console.error("Error loading user data:", error);
+                    loadMaterial(); // Load material even if user data fails
+                }
+            } else {
+                alert("Silakan login terlebih dahulu");
+                window.location.href = "../../masuk.html";
+            }
+        });
+
+        // Navigation event listeners
+        kembaliButton.addEventListener("click", function() {
+            window.location.href = "../rating_materi/rating_subjek.html";  
+        });
+
+        selesaiButton.addEventListener("click", () => {
+            window.location.href = "../dashboard-batak.html";
+        });
+
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "../dashboard-batak.html";
+        });
+
+        profileBtn.addEventListener("click", () => {
+            window.location.href = "../akun-pengguna.html";
+        });
+    </script>
+</body>
+</html>

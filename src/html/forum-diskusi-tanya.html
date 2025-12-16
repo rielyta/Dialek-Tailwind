@@ -3,281 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialek.id</title>
+    <title>Dialek.id - Forum Diskusi</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <style>
-            #sidebar {
-                position: fixed;
-                top: 0;
-                left: -100%;
-                background-color: white;
-                box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-                transition: left 0.4s ease;
-                z-index: 1000;
-            }
-            #sidebar.open {
-                left: 0;
-            }
-
-        @media (max-width: 768px) {
-    /* Make the layout more compact on tablets */
-    .header h1 {
-        font-size: 1.5rem;
-    }
-
-    textarea {
-        font-size: 0.875rem;
-        padding: 0.75rem;
-    }
-
-    .box-custom1 {
-        width: 90%;
-    }
-
-    .button-custom, .button-custom2 {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
-}
-
-@media (max-width: 640px) {
-    /* Mobile screen layout adjustments */
-    body {
-        font-size: 0.875rem;
-    }
-
-    nav {
-        flex-direction: flex;
-        align-items: flex-start;
-    }
-
-    .logo {
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-    }
-
-    .box-custom1 {
-        padding: 1rem;
-        width: 95%; /* Take almost full width on mobile */
-    }
-
-    .header h1 {
-        font-size: 1.25rem;
-        text-align: center;
-    }
-
-    textarea {
-        font-size: 0.75rem;
-        padding: 0.75rem;
-    }
-
-    button {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-    }
-
-    .jawab-button, .like-button {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-
-    /* Make sure buttons have enough space */
-    .flex.space-x-1 {
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    /* Username & icon spacing */
-    #account-username {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-
-    
-    }
-}
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-custom-radial font-inter flex flex-col min-h-screen">
     <nav class="flex items-center justify-between w-full px-12 py-12">
-        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
+        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
         <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
-            <p id="account-username" class="px-4 text-xl">username</p>
+            <p id="account-username" class="px-4 text-xl">memuat...</p>
             <i class="fa-solid fa-user text-2xl"></i> 
         </div>
     </nav>
-    <div id="sidebar" class="fixed bg-white w-60 h-full">
-        <div class="flex items-center justify-between w-full px-12 py-12">
-            <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
-        </div>
-        <ul class="mt-4 space-y-2">
-            <li>
-                <a href="./dashboard-batak.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">dashboard</span>
-                    <span class="text-black font-medium">Dasbor</span>
-                </a>
-            </li>
-            <li>
-                <a href="./forum-diskusi-tanya.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">forum</span>
-                    <span class="text-black font-medium">Forum Diskusi</span>
-                </a>
-            </li>
-            <li>
-                <a href="./materi-pilih-topik.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">book</span>
-                    <span class="text-black font-medium">Materi</span>
-                </a>
-            </li>
-            <li>
-                <a href="./permainan-hasil.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">extension</span>
-                    <span class="text-black font-medium">Permainan</span>
-                </a>
-            </li>
-            <li>
-                <a href="./literasi-budaya-level.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">auto_stories</span>
-                    <span class="text-black font-medium">Literasi Budaya</span>
-                </a>
-            </li>
-            <li>
-                <a href="./kosakata-model1.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">note_stack</span>
-                    <span class="text-black font-medium">Kosakata</span>
-                </a>
-            </li>
-            <li>
-                <a id="logout-button" href="/index.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">logout</span>
-                    <span class="text-black font-medium">Keluar</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <main class="flex flex-col items-center">
+
+    <main class="flex flex-col items-center flex-grow">
         <div class="flex items-center w-full justify-center mb-10">
-            <header class="header text-center">
-                <h1 class="h1 font-bold text-gradient">
-                  Wadah Diskusi
-                </h1>
-            </header>
+            <h1 class="text-4xl font-bold text-gradient">Wadah Diskusi</h1>
         </div>
-        <div class="mx-auto p-4 rounded-lg box-custom1 w-10/12 md:w-8/12 lg:w-6/12" style="background-color: rgba(212, 229, 221, 40);"> 
-            <div class="flex space-x-2 mb-4">
-                <div id="bahasaBatak" class="button-custom hover:opacity-100 text-sm">Bahasa Batak Toba</div>
-            </div>
 
-            <label for="pertanyaanInput" class="text-lg font-semibold text-green-800">Tulis pertanyaanmu:</label>
-            <textarea id="pertanyaanInput" class="w-full p-3 rounded-lg border-none focus:outline-none text-white" rows="5" style="background-color: #4C968B;"></textarea> 
-                <div class="flex justify-end mt-2"> 
-                    <button id="tanyaButton" class="bg-green-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-green-700">Tanya</button> 
+        <div class="flex items-start w-full px-12">
+            <div class="mx-auto p-6 rounded-lg box-custom1 w-10/12 md:w-8/12 lg:w-6/12" style="background-color: rgba(212, 229, 221, 0.4);"> 
+                <div class="flex space-x-2 mb-4">
+                    <div class="button-custom flex items-center justify-center text-sm py-2 px-4 rounded-full bg-blue-500 text-white">Bahasa Batak Toba</div>
+                </div>
+
+                <label for="pertanyaanInput" class="text-lg font-semibold text-green-800">Tulis pertanyaanmu:</label>
+                <textarea id="pertanyaanInput" class="w-full p-3 rounded-lg border-none focus:outline-none text-white" rows="5" placeholder="Ajukan pertanyaanmu di sini..." style="background-color: #4C968B;"></textarea>
+
+                <div class="flex justify-end mt-2">
+                    <button id="tanyaButton" class="bg-green-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-green-700">Tanya</button>
                 </div>
             </div>
         </div>
 
-       <div class="mt-6 w-full sm:w-10/12 md:w-8/12 lg:w-6/12 ">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"> 
-                <h2 class="text-base sm:text-lg font-semibold text-green-800 mb-2 sm:mb-0 ml-4">Pertanyaan Lain:</h2> 
+        <div class="mt-6 w-10/12 md:w-8/12 lg:w-6/12">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-semibold text-green-800">Pertanyaan Lain:</h2>
                 <div class="flex space-x-1">
-                    <button id="popularButton" class="button-custom2 text-white py-1 px-3 sm:py-2 sm:px-4 text-sm sm:text-base ml-3">Popular</button> 
-                    <button id="terbaruButton" class="button-custom2 text-white py-1 px-3 sm:py-2 sm:px-4 text-sm sm:text-base">Terbaru</button> 
+                    <button id="terbaruButton" class="button-custom2 text-white opacity-100">Terbaru</button>
+                    <button id="popularButton" class="button-custom2 text-white">Popular</button>
                 </div>
             </div>
-            <div id="pertanyaanList" class="space-y-2 w-11/12"></div> 
+
+            <div id="loading-container" class="text-center py-8 hidden">
+                <span class="loading-spinner"></span> Memuat...
+            </div>
+
+            <div id="pertanyaanList" class="space-y-2"></div>
         </div>
     </main>
 
-    <script>
-    const profile = document.getElementById("profile-button");
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    profile.addEventListener("click", () => {
-        window.location.href = "./profil-pengguna.html";
-    });
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
-        authDomain: "dialek-6a219.firebaseapp.com",
-        projectId: "dialek-6a219",
-        storageBucket: "dialek-6a219.appspot.com",
-        messagingSenderId: "423916223695",
-        appId: "1:423916223695:web:449bd44c54cad998d8cbba",
-        measurementId: "G-4SLBH47WTM"
-    };
-    
-    // Inisialisasi Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();  
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba"
+        };
 
-    const pertanyaanInput = document.getElementById('pertanyaanInput');
-    const tanyaButton = document.getElementById('tanyaButton');
-    const pertanyaanList = document.getElementById('pertanyaanList');
-    const popularButton = document.getElementById('popularButton');
-    const terbaruButton = document.getElementById('terbaruButton');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    async function loadPertanyaan(orderByField = "timestamp") {
-        const querySnapshot = await db.collection("pertanyaan").orderBy(orderByField, "desc").get();
-        pertanyaanList.innerHTML = '';  // Clear the list before adding new data
-        querySnapshot.forEach((doc) => {
-            const pertanyaan = doc.data();
-            const questionElement = document.createElement('div');
-            questionElement.className = 'flex items-center p-3 rounded-lg shadow-md text-white';
-            questionElement.style.backgroundColor = '#4C968B';
-            questionElement.innerHTML = `
-                <img src="https://img.icons8.com/color/48/000000/user.png" alt="user" class="w-8 h-8 rounded-full mr-2" />
-                <div class="flex-grow">
-                    <span class="font-semibold text-white">username</span>
-                    <p>${pertanyaan.text}</p>
-                </div>
-                <button class="jawab-button bg-green-800 text-white py-1 px-3 rounded-full shadow-md hover:bg-green-600">Jawab</button>
-                <button class="like-button text-white text-sm ml-2 w-8 h-8 rounded-full flex items-center justify-center">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <span class="like-count text-white ml-2">${pertanyaan.likes}</span>
-            `;
-            pertanyaanList.appendChild(questionElement);
-        });
-    }
+        let currentUser = null;
+        let pertanyaanArray = [];
 
-    tanyaButton.addEventListener('click', async () => {
-        const pertanyaanText = pertanyaanInput.value.trim();
-        if (pertanyaanText) {
-            const pertanyaanData = {
-                text: pertanyaanText,
-                likes: 0,
-                timestamp: Date.now()
-            };
+        const elements = {
+            input: document.getElementById('pertanyaanInput'),
+            tanyaBtn: document.getElementById('tanyaButton'),
+            list: document.getElementById('pertanyaanList'),
+            loading: document.getElementById('loading-container'),
+            terbaruBtn: document.getElementById('terbaruButton'),
+            popularBtn: document.getElementById('popularButton')
+        };
+
+        function showLoading(show) {
+            elements.loading.classList.toggle('hidden', !show);
+        }
+
+        async function loadPertanyaan() {
+            try {
+                showLoading(true);
+                const q = query(collection(db, 'forum_questions'), orderBy('created_at', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                pertanyaanArray = [];
+                snapshot.forEach(doc => {
+                    pertanyaanArray.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderPertanyaan(pertanyaanArray);
+            } catch (error) {
+                console.error("Error loading:", error);
+                alert("Gagal memuat pertanyaan: " + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderPertanyaan(array) {
+            elements.list.innerHTML = '';
+            
+            if (!array.length) {
+                elements.list.innerHTML = '<p class="text-gray-600 text-center py-8">Belum ada pertanyaan</p>';
+                return;
+            }
+
+            array.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center p-3 rounded-lg shadow-md text-white cursor-pointer hover:shadow-lg';
+                div.style.backgroundColor = '#4C968B';
+                
+                const text = (item.text || '').substring(0, 100);
+                const likes = item.likes || 0;
+                const answers = item.answers_count || 0;
+                const liked = item.likedBy?.includes(currentUser?.uid);
+
+                div.innerHTML = `
+                    <img src="${item.userProfileImage || 'https://img.icons8.com/color/48/user.png'}" class="w-8 h-8 rounded-full mr-3 object-cover"/>
+                    <div class="flex-grow">
+                        <span class="font-semibold">${item.username || 'Anonymous'}</span>
+                        <p class="text-sm">${text}${text.length >= 100 ? '...' : ''}</p>
+                        <span class="text-xs text-gray-300">${new Date(item.created_at).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-center">
+                            <div class="text-xs">Jawaban</div>
+                            <div class="font-bold">${answers}</div>
+                        </div>
+                        <button class="jawab-btn bg-green-800 py-1 px-3 rounded-full text-sm hover:bg-green-600">Jawab</button>
+                        <button class="like-btn flex items-center gap-1" data-id="${item.id}" data-liked="${liked}">
+                            <i class="fas fa-heart" style="${liked ? 'color:#ef4444' : ''}"></i>
+                            <span>${likes}</span>
+                        </button>
+                    </div>
+                `;
+
+                div.querySelector('.jawab-btn').onclick = (e) => {
+                    e.stopPropagation();
+                    window.location.href = `forum-diskusi-jawab.html?questionId=${item.id}`;
+                };
+
+                div.querySelector('.like-btn').onclick = async (e) => {
+                    e.stopPropagation();
+                    if (!currentUser) return alert('Login dulu');
+                    
+                    const btn = e.currentTarget;
+                    const isLiked = btn.dataset.liked === 'true';
+                    const icon = btn.querySelector('i');
+                    const span = btn.querySelector('span');
+                    
+                    try {
+                        let newLikes = likes;
+                        let newLikedBy = [...(item.likedBy || [])];
+                        
+                        if (isLiked) {
+                            newLikes--;
+                            newLikedBy = newLikedBy.filter(uid => uid !== currentUser.uid);
+                            icon.style.color = '';
+                            btn.dataset.liked = 'false';
+                        } else {
+                            newLikes++;
+                            newLikedBy.push(currentUser.uid);
+                            icon.style.color = '#ef4444';
+                            btn.dataset.liked = 'true';
+                        }
+
+                        await updateDoc(doc(db, 'forum_questions', item.id), {
+                            likes: newLikes,
+                            likedBy: newLikedBy
+                        });
+
+                        span.textContent = newLikes;
+                        item.likes = newLikes;
+                        item.likedBy = newLikedBy;
+                    } catch (error) {
+                        console.error("Like error:", error);
+                        alert("Gagal like: " + error.message);
+                    }
+                };
+
+                div.onclick = () => window.location.href = `forum-diskusi-jawab.html?questionId=${item.id}`;
+                elements.list.appendChild(div);
+            });
+        }
+
+        elements.tanyaBtn.onclick = async () => {
+            if (!currentUser) return alert('Login dulu');
+            
+            const text = elements.input.value.trim();
+            if (!text) return alert('Tulis pertanyaan dulu');
 
             try {
-                await db.collection("pertanyaan").add(pertanyaanData);
-                pertanyaanInput.value = '';  // Clear the input
-                loadPertanyaan(); // Refresh questions
+                elements.tanyaBtn.disabled = true;
+                elements.tanyaBtn.innerHTML = '<span class="loading-spinner"></span> Mengirim...';
+
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                const userData = userDoc.data();
+
+                await addDoc(collection(db, 'forum_questions'), {
+                    text,
+                    userId: currentUser.uid,
+                    username: userData?.username || 'Anonymous',
+                    userProfileImage: userData?.profile_image || null,
+                    likes: 0,
+                    likedBy: [],
+                    category: 'Bahasa Batak Toba',
+                    created_at: new Date().toISOString(),
+                    answers_count: 0
+                });
+
+                elements.input.value = '';
+                alert('Pertanyaan berhasil diposting!');
+                await loadPertanyaan();
             } catch (error) {
-                console.error("Error adding document:", error);
+                console.error("Post error:", error);
+                alert("Gagal posting: " + error.message);
+            } finally {
+                elements.tanyaBtn.disabled = false;
+                elements.tanyaBtn.textContent = 'Tanya';
             }
-        } else {
-            alert('Tolong masukkan pertanyaan!');
-        }
-    });
+        };
 
-    // Urutkan berdasarkan popularitas (likes) ketika tombol "Populer" diklik
-    popularButton.addEventListener('click', () => loadPertanyaan("likes"));
+        elements.terbaruBtn.onclick = () => {
+            const sorted = [...pertanyaanArray].sort((a, b) => 
+                new Date(b.created_at) - new Date(a.created_at)
+            );
+            elements.terbaruBtn.classList.add('opacity-100');
+            elements.popularBtn.classList.remove('opacity-100');
+            renderPertanyaan(sorted);
+        };
 
-    // Urutkan berdasarkan waktu terbaru ketika tombol "Terbaru" diklik
-    terbaruButton.addEventListener('click', () => loadPertanyaan("timestamp"));
+        elements.popularBtn.onclick = () => {
+            const sorted = [...pertanyaanArray].sort((a, b) => 
+                (b.likes || 0) - (a.likes || 0)
+            );
+            elements.popularBtn.classList.add('opacity-100');
+            elements.terbaruBtn.classList.remove('opacity-100');
+            renderPertanyaan(sorted);
+        };
 
-    document.addEventListener('DOMContentLoaded', () => loadPertanyaan());
+        document.getElementById('home').onclick = () => window.location.href = './dashboardBatak.html';
+        document.getElementById('profile-button').onclick = () => window.location.href = './akun-pengguna.html';
 
-    // Sidebar toggle function
-    function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        sidebar.classList.toggle("open");  // Toggle the 'open' class to show or hide the sidebar
-    }
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert('Login dulu');
+                return window.location.href = './masuk.html';
+            }
 
+            currentUser = user;
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    document.getElementById('account-username').textContent = 
+                        userDoc.data().username || 'User';
+                }
+                await loadPertanyaan();
+            } catch (error) {
+                console.error("Auth error:", error);
+            }
+        });
     </script>
 </body>
 </html>

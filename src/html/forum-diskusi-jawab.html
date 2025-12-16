@@ -3,291 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialek.id</title>
+    <title>Dialek.id - Jawab Pertanyaan</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <style>
-    @media (max-width: 768px) {
-        /* Compact layout on tablets */
-        .header h1 {
-            font-size: 1.5rem;
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .box-custom1 {
+                width: 90%;
+            }
+            textarea, .box-custom1, .header h1 {
+                font-size: 0.875rem;
+                padding: 0.75rem;
+            }
         }
-
-        .box-custom1 {
-            width: 90%;
-        }
-
-        textarea, .box-custom1, .header h1 {
-            font-size: 0.875rem;
-            padding: 0.75rem;
-        }
-
-        .button-custom, .button-custom2 {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-    }
-
-    @media (max-width: 640px) {
-        /* Mobile screen layout adjustments */
-        body {
-            font-size: 0.875rem;
-        }
-
-        nav {
-            flex-direction: flex;
-            align-items: flex-start;
-        }
-
-        .logo {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .box-custom1 {
-            padding: 1rem;
-            width: 95%;
-        }
-
-        .header h1 {
-            font-size: 1.25rem;
-            text-align: center;
-        }
-
-        textarea{
-            font-size: 0.75rem;
-        }
-    }
-    #sidebar {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        background-color: white;
-        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-        transition: left 0.4s ease;
-        z-index: 1000;
-    }
-    #sidebar.open {
-        left: 0;
-    }
-</style>
+    </style>
 </head>
 <body class="bg-custom-radial font-inter flex flex-col min-h-screen">
-
     <nav class="flex items-center justify-between w-full px-12 py-12">
-        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
+        <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
         <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
-            <p id="account-username" class="px-4 text-xl">username</p>
+            <p id="account-username" class="px-4 text-xl">memuat...</p>
             <i class="fa-solid fa-user text-2xl"></i> 
         </div>
     </nav>
-    <div id="sidebar" class="fixed bg-white w-60 h-full">
-        <div class="flex items-center justify-between w-full px-12 py-12">
-            <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer" onclick="toggleSidebar()">dialek.id</div>
-        </div>
-        <ul class="mt-4 space-y-2">
-            <li>
-                <a href="./dashboard-batak.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">dashboard</span>
-                    <span class="text-black font-medium">Dasbor</span>
-                </a>
-            </li>
-            <li>
-                <a href="./forum-diskusi-tanya.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">forum</span>
-                    <span class="text-black font-medium">Forum Diskusi</span>
-                </a>
-            </li>
-            <li>
-                <a href="./materi-pilih-topik.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">book</span>
-                    <span class="text-black font-medium">Materi</span>
-                </a>
-            </li>
-            <li>
-                <a href="./permainan-hasil.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">extension</span>
-                    <span class="text-black font-medium">Permainan</span>
-                </a>
-            </li>
-            <li>
-                <a href="./literasi-budaya-level.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">auto_stories</span>
-                    <span class="text-black font-medium">Literasi Budaya</span>
-                </a>
-            </li>
-            <li>
-                <a href="./kosakata-model1.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">note_stack</span>
-                    <span class="text-black font-medium">Kosakata</span>
-                </a>
-            </li>
-            <li>
-                <a id="logout-button" href="/index.html" class="flex items-center space-x-3 px-6 py-3 hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-custom1">logout</span>
-                    <span class="text-black font-medium">Keluar</span>
-                </a>
-            </li>
-        </ul>
-    </div>
 
     <main class="flex flex-col items-center flex-grow">
-        <!-- Judul -->
         <div class="flex items-center w-full justify-center mb-10">
             <header class="header text-center">
-                <h1 class="h1 font-bold text-gradient">
-                  Wadah Diskusi
-                </h1>
+                <h1 class="h1 font-bold text-gradient">Jawab Pertanyaan</h1>
             </header>
         </div>
 
-        <!-- Box Pertanyaan di tengah -->
+        <!-- Pertanyaan Display -->
         <div class="p-8 rounded-lg box-custom1 w-11/12 md:w-8/12 lg:w-6/12 mx-auto" style="background-color: rgba(212, 229, 221, 0.4)">
-            <!-- Tempat Pertanyaan -->
             <section id="questionSection" class="mb-6 flex items-start">
-                <img src="../assets/tandatanya.webp" alt="user" class="w-9 h-9 rounded-full mr-2" />
+                <img id="questionUserImage" src="https://img.icons8.com/color/48/000000/user.png" alt="user" class="w-9 h-9 rounded-full mr-2 object-cover" />
                 <div id="questionDisplay" class="flex-grow p-6 rounded-lg text-white" style="background-color: #4C968B;">
+                    <p id="questionText">Memuat pertanyaan...</p>
+                    <small id="questionTime" class="text-gray-300"></small>
                 </div>
             </section>
 
             <!-- Input Jawaban -->
-            <section id="answerInputSection" class="mb-10 flex">
-                <textarea id="answerInput" class="w-full p-2 rounded-lg border-none focus:outline-none mt-4" rows="5" style="background-color: #4C968B; color: white;"></textarea> 
-                <div class="flex justify-end mt-6 p-2">
-                    <button id="submitAnswerButton"><img src="../assets/tomboltambahjawab.webp" alt="" class="w-12 h-12 rounded-full mr-2"/></button>
+            <section id="answerInputSection" class="mb-10">
+                <label for="answerInput" class="text-lg font-semibold text-green-800 block mb-2">Tulis jawabanmu:</label>
+                <textarea id="answerInput" class="w-full p-3 rounded-lg border-none focus:outline-none text-white" rows="5" placeholder="Tulis jawaban yang membantu..." style="background-color: #4C968B;"></textarea> 
+                <div class="flex justify-end mt-2">
+                    <button id="submitAnswerButton" class="bg-green-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-green-700">Kirim Jawaban</button>
                 </div>
             </section>
 
             <!-- List Jawaban -->
             <section id="answerListSection">
-                <h2 class="text-xl font-bold mb-4 text-green-800">Jawaban</h2>
-                <div id="answersList" class="space-y-4">
-                </div>
+                <h2 class="text-xl font-bold mb-4 text-green-800">Jawaban (<span id="answerCount">0</span>)</h2>
+                <div id="answersList" class="space-y-4"></div>
             </section>
         </div>
     </main>
 
-    <script>
-        // Tampilkan pertanyaan
-        const urlParams = new URLSearchParams(window.location.search);
-        const questionText = urlParams.get('question');
-        document.getElementById('questionDisplay').textContent = questionText;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        const answersList = document.getElementById('answersList');
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+            authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dialek-6a219",
+            storageBucket: "dialek-6a219.firebasestorage.app",
+            messagingSenderId: "423916223695",
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Elements
         const answerInput = document.getElementById('answerInput');
         const submitAnswerButton = document.getElementById('submitAnswerButton');
+        const answersList = document.getElementById('answersList');
+        const homeBtn = document.getElementById('home');
+        const profileBtn = document.getElementById('profile-button');
+        const answerCount = document.getElementById('answerCount');
 
-        // Tambah jawaban
-        submitAnswerButton.addEventListener('click', () => {
-            const answerText = answerInput.value.trim();
-            if (answerText) {
-                const answerElement = document.createElement('div');
-                answerElement.className = 'flex flex-col p-4 bg-green-200 rounded-lg text-white mb-4';
-                answerElement.style.backgroundColor = '#68A192';
+        let currentUser = null;
+        let currentQuestion = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const questionId = urlParams.get('questionId');
 
-                answerElement.likes = 0;
-                answerElement.comments = 0;
-                answerElement.liked = false;
+        // Load question
+        async function loadQuestion() {
+  try {
+    const questionDoc = await getDoc(doc(db, 'forum_questions', questionId));
+    if (!questionDoc.exists()) {
+      alert('Pertanyaan tidak ditemukan');
+      return;
+    }
 
-                answerElement.innerHTML = `
-                    <div class="flex items-center">
-                        <img src="https://img.icons8.com/color/48/000000/user.png" alt="user" class="w-8 h-8 rounded-full mr-4" />
-                        <div class="flex-grow">
-                            <span class="font-semibold text-white">username</span>
-                            <p>${answerText}</p>
-                        </div>
+    currentQuestion = { id: questionId, ...questionDoc.data() };
+    document.getElementById('questionText').textContent = currentQuestion.text;
+    document.getElementById('questionTime').textContent =
+      new Date(currentQuestion.created_at).toLocaleString('id-ID');
 
-                        <button class="like-button text-white text-sm w-8 h-8 rounded-full flex items-center justify-center ml-3">
-                            <i class="fas fa-heart"></i>
-                            <span class="like-count text-white ml-2">0</span>
-                        </button>
+  } catch (error) {
+    console.error("Error loading question:", error);
+    return;
+  }
 
-                        <button class="comment-toggle-button text-white text-sm w-8 h-8 rounded-full flex items-center justify-center ml-3">
-                        <i class="fas fa-comment"></i>
-                        <span class="comment-count text-white ml-2">0</span>
-                        </button>
+  // 🔥 dipisah
+  await loadAnswers();
+}
 
-                    </div>
-                    <div class="comments-list hidden mt-2 ml-12 space-y-2">
-                        <div class="comment-input-box flex items-center mt-2">
-                            <input type="text" placeholder="Tulis komentar Anda..." class="comment-input w-full p-2 rounded-lg focus:outline-none text-black mr-2">
-                            <button class="submit-comment text-white bg-green-900 rounded-lg p-2">Kirim</button>
-                        </div>
+        
+
+        // Load comments for an answer
+        async function loadComments(answerId) {
+            try {
+                const q = query(
+                    collection(db, 'forum_comments'),
+                    where('answerId', '==', answerId),
+                    orderBy('created_at', 'asc')
+                );
+                const querySnapshot = await getDocs(q);
+                const comments = [];
+                
+                querySnapshot.forEach((doc) => {
+                    comments.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                return comments;
+            } catch (error) {
+                console.error("Error loading comments:", error);
+                return [];
+            }
+        }
+
+        // Render comments
+        function renderComments(commentsList, answerId, commentInputBox) {
+            const commentsContainer = commentInputBox.parentElement;
+            const existingComments = commentsContainer.querySelectorAll('.comment-item:not(.comment-input-box)');
+            existingComments.forEach(el => el.remove());
+
+            commentsList.forEach((comment) => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-item flex items-start text-white p-2 rounded-md mt-2';
+                commentElement.style.backgroundColor = '#5A897C';
+                commentElement.innerHTML = `
+                    <img src="${comment.userProfileImage || 'https://img.icons8.com/color/48/000000/user.png'}" alt="user" class="w-6 h-6 rounded-full mr-2 object-cover flex-shrink-0" />
+                    <div class="flex-grow min-w-0">
+                        <span class="font-semibold text-white text-sm">${comment.username || 'Anonymous'}</span>
+                        <small class="text-gray-300 ml-2 text-xs">${new Date(comment.created_at).toLocaleString('id-ID')}</small>
+                        <p class="text-sm mt-1 break-words">${comment.text}</p>
                     </div>
                 `;
+                commentInputBox.parentElement.insertBefore(commentElement, commentInputBox);
+            });
+        }
 
-                answersList.appendChild(answerElement);
-                answerInput.value = '';
+        // Load answers - FIXED dengan proper async/await
+        async function loadAnswers() {
+            try {
+                const q = query(
+                    collection(db, 'forum_answers'),
+                    where('questionId', '==', questionId),
+                    orderBy('created_at', 'desc')
+                    );
 
-                // Like button
-                const likeButton = answerElement.querySelector('.like-button');
-                const heartIcon = likeButton.querySelector('.fa-heart'); 
-                const likeCount = answerElement.querySelector('.like-count');
+                const querySnapshot = await getDocs(q);
+                
+                answersList.innerHTML = '';
+                let count = 0;
 
-                likeButton.addEventListener('click', () => {
-                    if (!answerElement.liked) {
-                        answerElement.likes += 1;
-                        answerElement.liked = true;
-                        heartIcon.classList.add('text-green-800');
-                    } else {
-                        answerElement.likes -= 1;
-                        answerElement.liked = false;
-                        heartIcon.classList.remove('text-green-800');
-                    }
-                    likeCount.textContent = answerElement.likes;
-                });
+                // Gunakan for...of untuk proper awaiting
+                for (const docSnap of querySnapshot.docs) {
+                    const answer = docSnap.data();
+                    const answerId = docSnap.id;
+                    const answerElement = document.createElement('div');
+                    answerElement.className = 'flex flex-col p-4 rounded-lg text-white';
+                    answerElement.style.backgroundColor = '#68A192';
+                    answerElement.dataset.answerId = answerId;
 
-                // Komentar
-                const commentToggleButton = answerElement.querySelector('.comment-toggle-button');
-                const commentCount = answerElement.querySelector('.comment-count');
-                const commentsList = answerElement.querySelector('.comments-list');
+                    const likes = answer.likes || 0;
+                    const userLiked = answer.likedBy?.includes(currentUser?.uid) || false;
+                    const commentCount = answer.comments_count || 0;
 
-                commentToggleButton.addEventListener('click', () => {
-                    commentsList.classList.toggle('hidden');
-                });
-
-                // Tambah komentar
-                const submitCommentButton = answerElement.querySelector('.submit-comment');
-                const commentInput = answerElement.querySelector('.comment-input');
-
-                submitCommentButton.addEventListener('click', () => {
-                    const commentText = commentInput.value.trim();
-                    if (commentText) {
-                        const commentElement = document.createElement('div');
-                        commentElement.className = 'flex items-center text-white p-2 rounded-md';
-                        commentElement.style.backgroundColor = '#5A897C';
-                        commentElement.innerHTML = `
-                            <img src="https://img.icons8.com/color/48/000000/user.png" alt="user" class="w-6 h-6 rounded-full mr-2" />
-                            <div class="flex-grow">
-                                <span class="font-semibold text-white">username</span>
-                                <p>${commentText}</p>
+                    answerElement.innerHTML = `
+                        <div class="flex items-start mb-2">
+                            <img src="${answer.userProfileImage || 'https://img.icons8.com/color/48/000000/user.png'}" alt="user" class="w-8 h-8 rounded-full mr-3 object-cover flex-shrink-0" />
+                            <div class="flex-grow min-w-0">
+                                <span class="font-semibold text-white">${answer.username || 'Anonymous'}</span>
+                                <small class="text-gray-300 ml-2">${new Date(answer.created_at).toLocaleString('id-ID')}</small>
+                                <p class="mt-2 break-words">${answer.text}</p>
                             </div>
-                        `;
-                        commentsList.insertBefore(commentElement, commentsList.querySelector('.comment-input-box'));
-                        commentInput.value = ''; 
+                        </div>
+                        <div class="flex items-center space-x-4 mt-2 ml-11">
+                            <button class="like-button flex items-center space-x-1 text-sm hover:opacity-80 transition" data-liked="${userLiked}" data-answer-id="${answerId}">
+                                <i class="fas fa-heart" style="${userLiked ? 'color: #ef4444;' : ''}"></i>
+                                <span class="like-count">${likes}</span>
+                            </button>
+                            <button class="comment-toggle-button flex items-center space-x-1 text-sm hover:opacity-80 transition" data-answer-id="${answerId}">
+                                <i class="fas fa-comment"></i>
+                                <span class="comment-count">${commentCount}</span>
+                            </button>
+                        </div>
+                        <div class="comments-list hidden mt-3 ml-11 space-y-2 border-t border-green-700 pt-2" data-answer-id="${answerId}">
+                            <div class="comment-input-box flex items-center mt-2 gap-2">
+                                <input type="text" placeholder="Tulis komentar..." class="comment-input flex-1 p-2 rounded-lg focus:outline-none text-black" data-answer-id="${answerId}">
+                                <button class="submit-comment bg-green-900 text-white rounded-lg px-3 py-2 text-sm hover:bg-green-800 transition" data-answer-id="${answerId}">Kirim</button>
+                            </div>
+                        </div>
+                    `;
 
-                        // Hitung komentar
-                        answerElement.comments += 1;
-                        commentCount.textContent = answerElement.comments;
+                    answersList.appendChild(answerElement);
+                    count++;
+
+                    // Load comments dengan await
+                    const commentsList = answerElement.querySelector('.comments-list');
+                    const commentInputBox = commentsList.querySelector('.comment-input-box');
+                    const comments = await loadComments(answerId);
+                    renderComments(comments, answerId, commentInputBox);
+
+                    // Setup event listeners
+                    setupAnswerListeners(answerElement, answerId, answer, likes);
+                }
+
+                answerCount.textContent = count;
+                if (count === 0) {
+                    answersList.innerHTML = '<p class="text-gray-600 text-center py-4">Belum ada jawaban. Jadilah yang pertama menjawab!</p>';
+                }
+            } catch (error) {
+                console.error("Error loading answers:", error);
+                answersList.innerHTML = '<p class="text-red-500 text-center">Gagal memuat jawaban</p>';
+            }
+        }
+
+        // Setup event listeners untuk jawaban
+        function setupAnswerListeners(answerElement, answerId, answer, initialLikes) {
+            // Like button
+            const likeButton = answerElement.querySelector('.like-button');
+            const likeCountEl = answerElement.querySelector('.like-count');
+            const heartIcon = likeButton.querySelector('i');
+
+            likeButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                if (!currentUser) {
+                    alert('Silakan login terlebih dahulu');
+                    return;
+                }
+
+                try {
+                    const isCurrentlyLiked = likeButton.getAttribute('data-liked') === 'true';
+                    const answerRef = doc(db, 'forum_answers', answerId);
+                    
+                    let newLikes = parseInt(likeCountEl.textContent);
+                    let newLikedBy = [...(answer.likedBy || [])];
+
+                    if (isCurrentlyLiked) {
+                        newLikes--;
+                        newLikedBy = newLikedBy.filter(uid => uid !== currentUser.uid);
+                        heartIcon.style.color = '';
+                        likeButton.setAttribute('data-liked', 'false');
+                    } else {
+                        newLikes++;
+                        newLikedBy.push(currentUser.uid);
+                        heartIcon.style.color = '#ef4444';
+                        likeButton.setAttribute('data-liked', 'true');
                     }
+
+                    await updateDoc(answerRef, {
+                        likes: newLikes,
+                        likedBy: newLikedBy
+                    });
+
+                    likeCountEl.textContent = newLikes;
+                    answer.likes = newLikes;
+                    answer.likedBy = newLikedBy;
+                } catch (error) {
+                    console.error("Error updating like:", error);
+                }
+            });
+
+            // Comment toggle
+            const commentToggleButton = answerElement.querySelector('.comment-toggle-button');
+            const commentsList = answerElement.querySelector('.comments-list');
+            
+            commentToggleButton.addEventListener('click', () => {
+                commentsList.classList.toggle('hidden');
+            });
+
+            // Submit comment
+            const submitCommentButton = answerElement.querySelector('.submit-comment');
+            const commentInput = answerElement.querySelector('.comment-input');
+            const commentCountSpan = answerElement.querySelector('.comment-count');
+
+            submitCommentButton.addEventListener('click', async () => {
+                const commentText = commentInput.value.trim();
+                if (!commentText) {
+                    alert('Tulis komentar terlebih dahulu');
+                    return;
+                }
+
+                if (!currentUser) {
+                    alert('Silakan login terlebih dahulu');
+                    return;
+                }
+
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    const userData = userDoc.data();
+
+                    await addDoc(collection(db, 'forum_comments'), {
+                        answerId: answerId,
+                        questionId: questionId,
+                        userId: currentUser.uid,
+                        username: userData?.username || 'Anonymous',
+                        userProfileImage: userData?.profile_image || null,
+                        text: commentText,
+                        created_at: new Date().toISOString()
+                    });
+
+                    // Update comment count
+                    const newCommentCount = (answer.comments_count || 0) + 1;
+                    await updateDoc(doc(db, 'forum_answers', answerId), {
+                        comments_count: newCommentCount
+                    });
+                    answer.comments_count = newCommentCount;
+                    commentCountSpan.textContent = newCommentCount;
+
+                    commentInput.value = '';
+                    
+                    // Reload comments
+                    const updatedComments = await loadComments(answerId);
+                    renderComments(updatedComments, answerId, commentsList.querySelector('.comment-input-box'));
+                    alert('Komentar berhasil diposting!');
+                } catch (error) {
+                    console.error("Error posting comment:", error);
+                    alert('Gagal mengirim komentar');
+                }
+            });
+        }
+
+        // Submit answer
+        submitAnswerButton.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu');
+                return;
+            }
+
+            const answerText = answerInput.value.trim();
+            if (!answerText) {
+                alert('Tulis jawaban terlebih dahulu');
+                return;
+            }
+
+            submitAnswerButton.disabled = true;
+            submitAnswerButton.textContent = 'Mengirim...';
+
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                const userData = userDoc.data();
+
+                await addDoc(collection(db, 'forum_answers'), {
+                    questionId: questionId,
+                    userId: currentUser.uid,
+                    username: userData?.username || 'Anonymous',
+                    userProfileImage: userData?.profile_image || null,
+                    text: answerText,
+                    likes: 0,
+                    likedBy: [],
+                    comments_count: 0,
+                    created_at: new Date().toISOString()
                 });
-            } else {
-                alert('Tolong masukkan jawaban!');
+
+                // Update answer count
+                await updateDoc(doc(db, 'forum_questions', questionId), {
+                    answers_count: (currentQuestion.answers_count || 0) + 1
+                });
+
+                answerInput.value = '';
+                // PENTING: Reload jawaban setelah post
+                await loadAnswers();
+                alert('Jawaban berhasil diposting!');
+            } catch (error) {
+                console.error('Error posting answer:', error);
+                alert('Gagal mengirim jawaban: ' + error.message);
+            } finally {
+                submitAnswerButton.disabled = false;
+                submitAnswerButton.textContent = 'Kirim Jawaban';
             }
         });
 
-        const profile = document.getElementById("profile-button");
-        profile.addEventListener("click", () => {
-                window.location.href = "./profil-pengguna.html";
+        // Navigation
+        homeBtn.addEventListener('click', () => {
+            window.location.href = './dashboard-batak.html';
         });
 
-        // Sidebar toggle function
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("open");  // Toggle the 'open' class to show or hide the sidebar
-        }
+        profileBtn.addEventListener('click', () => {
+            window.location.href = './akun-pengguna.html';
+        });
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        document.getElementById('account-username').textContent = userData.username || 'User';
+                        
+                        if (questionId) {
+                            await loadQuestion();
+                        } else {
+                            alert('ID pertanyaan tidak ditemukan');
+                            window.location.href = './forum-diskusi-tanya.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading user data:", error);
+                }
+            } else {
+                alert('Silakan login terlebih dahulu');
+                window.location.href = '../../masuk.html';
+            }
+        });
     </script>
 </body>
 </html>
