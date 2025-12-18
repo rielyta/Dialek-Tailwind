@@ -1,346 +1,248 @@
-class AESECCSystem {
+/**
+ * AES-ECC Cryptographic System
+ * 
+ * Provides hybrid encryption using:
+ * - ECC (Elliptic Curve Cryptography) for key agreement
+ * - AES-256-GCM for symmetric encryption
+ * 
+ * @version 1.0
+ * @exports {class} AESECCSystem
+ */
+
+export class AESECCSystem {
+
   constructor() {
-    this.metrics = {
-      plaintexts: [],
-      ciphertexts: [],
-      times: []
-    };
+    this.curve = "P-256";
   }
 
   /**
-   * Step 1: Generate ECC P-256 Key Pair
+   * Generate ECC Key Pair
+   * @returns {Promise<CryptoKeyPair>} Public and Private keys
    */
   async generateECCKeyPair() {
-    console.log('🔑 Generating ECC P-256 key pair...');
-    const start = performance.now();
-
-    const keyPair = await window.crypto.subtle.generateKey(
+    return crypto.subtle.generateKey(
       {
-        name: 'ECDH',
-        namedCurve: 'P-256'
+        name: "ECDH",
+        namedCurve: this.curve
       },
-      true, 
-      ['deriveBits', 'deriveKey']
+      true, // extractable
+      ["deriveKey", "deriveBits"]
     );
-
-    const time = performance.now() - start;
-    console.log(` Generated in ${time.toFixed(2)}ms`);
-
-    return {
-      publicKey: keyPair.publicKey,
-      privateKey: keyPair.privateKey
-    };
   }
 
   /**
-   * Export Public Key to JWK (untuk Firebase)
+   * Export Public Key to JWK format
+   * @param {CryptoKey} publicKey
+   * @returns {Promise<Object>} JWK format
    */
   async exportPublicKeyToJWK(publicKey) {
-    const jwk = await window.crypto.subtle.exportKey('jwk', publicKey);
-    return jwk;
+    return crypto.subtle.exportKey("jwk", publicKey);
   }
 
   /**
-   * Import Public Key dari JWK
+   * Export Private Key to JWK format
+   * @param {CryptoKey} privateKey
+   * @returns {Promise<Object>} JWK format
+   */
+  async exportPrivateKey(privateKey) {
+    return crypto.subtle.exportKey("jwk", privateKey);
+  }
+
+  /**
+   * Import Public Key from JWK
+   * @param {Object} jwk - Public key in JWK format
+   * @returns {Promise<CryptoKey>}
    */
   async importPublicKeyFromJWK(jwk) {
-    const publicKey = await window.crypto.subtle.importKey(
-      'jwk',
+    return crypto.subtle.importKey(
+      "jwk",
       jwk,
-      {
-        name: 'ECDH',
-        namedCurve: 'P-256'
-      },
+      { name: "ECDH", namedCurve: this.curve },
       true,
-      ['deriveBits']
+      []
     );
-    return publicKey;
   }
 
   /**
-   * Step 2: ECDH Key Agreement (menghasilkan shared secret)
+   * Import Private Key from JWK
+   * @param {Object} jwk - Private key in JWK format
+   * @returns {Promise<CryptoKey>}
    */
-  async performECDH(privateKey, publicKeyRemote) {
-    console.log(' ECDH P-256 key agreement...');
-    const start = performance.now();
+  async importPrivateKeyFromJWK(jwk) {
+    return crypto.subtle.importKey(
+      "jwk",
+      jwk,
+      { name: "ECDH", namedCurve: this.curve },
+      true,
+      ["deriveKey", "deriveBits"]
+    );
+  }
 
-    const sharedSecret = await window.crypto.subtle.deriveBits(
+  /**
+   * Derive shared secret using ECDH
+   * @param {CryptoKey} privateKey
+   * @param {CryptoKey} publicKey
+   * @returns {Promise<Uint8Array>}
+   */
+  async deriveSharedSecret(privateKey, publicKey) {
+    return crypto.subtle.deriveBits(
       {
-        name: 'ECDH',
-        public: publicKeyRemote
+        name: "ECDH",
+        public: publicKey
       },
       privateKey,
-      256 // 256 bits
+      256 // 256 bits = 32 bytes
     );
-
-    const time = performance.now() - start;
-    console.log(` Shared secret generated (${new Uint8Array(sharedSecret).length} bytes) in ${time.toFixed(2)}ms`);
-
-    return new Uint8Array(sharedSecret);
   }
 
   /**
-   * Step 3: Derive AES Key dari Shared Secret
+   * Derive AES Key from shared secret
+   * @param {Uint8Array} sharedSecret
+   * @returns {Promise<CryptoKey>}
    */
-  async deriveAESKeyFromSharedSecret(sharedSecret) {
-    console.log('🔑 Deriving AES-256 key from shared secret...');
-    const start = performance.now();
-
-    // Import shared secret sebagai key untuk HKDF
-    const ikm = await window.crypto.subtle.importKey(
-      'raw',
+  async deriveAESKey(sharedSecret) {
+    // First import the shared secret as HMAC key
+    const hkdfKey = await crypto.subtle.importKey(
+      "raw",
       sharedSecret,
-      { name: 'HMAC', hash: 'SHA-256' },
+      { name: "HMAC", hash: "SHA-256" },
       false,
-      ['sign']
+      ["sign"]
     );
 
-    // Derive menggunakan HKDF
-    const keyMaterial = await window.crypto.subtle.deriveBits(
-      {
-        name: 'HKDF',
-        hash: 'SHA-256',
-        salt: new Uint8Array(32),
-        info: new TextEncoder().encode('dialek-id-aes-ecc')
-      },
-      ikm,
-      256 // 256 bits untuk AES-256
+    // Then derive AES key using HMAC-based KDF (simplified)
+    // In production, use proper HKDF or PBKDF2
+    const derivedBits = await crypto.subtle.sign(
+      "HMAC",
+      hkdfKey,
+      new TextEncoder().encode("AES-KEY-DERIVATION")
     );
 
-    // Import sebagai AES key
-    const aesKey = await window.crypto.subtle.importKey(
-      'raw',
-      keyMaterial,
-      { name: 'AES-GCM' },
+    return crypto.subtle.importKey(
+      "raw",
+      derivedBits.slice(0, 32), // Take first 256 bits for AES-256
+      { name: "AES-GCM" },
       false,
-      ['encrypt', 'decrypt']
+      ["encrypt", "decrypt"]
     );
-
-    const time = performance.now() - start;
-    console.log(AES key derived in ${time.toFixed(2)}ms);
-
-    return aesKey;
   }
 
   /**
-   * Step 4: Encrypt dengan AES-256-GCM
+   * Complete encryption workflow
+   * Encrypts plaintext using hybrid AES-ECC encryption
+   * 
+   * @param {string} plaintext - Text to encrypt
+   * @param {CryptoKey} senderPrivateKey - Sender's private key
+   * @param {CryptoKey} recipientPublicKey - Recipient's public key
+   * @returns {Promise<Object>} {encryptedData: string, plaintextSize, ciphertextSize, expansion, workflowTime}
    */
-  async encryptWithAES(plaintext, aesKey) {
-    console.log('🔒 Encrypting with AES-256-GCM...');
-    const start = performance.now();
-
-    // Generate random IV (96-bit)
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));
-
-    // Convert plaintext ke bytes
-    const plaintextBytes = new TextEncoder().encode(plaintext);
-
-    // Encrypt
-    const ciphertext = await window.crypto.subtle.encrypt(
-      {
-        name: 'AES-GCM',
-        iv: iv
-      },
-      aesKey,
-      plaintextBytes
-    );
-
-    const time = performance.now() - start;
-
-    // Combine IV + Ciphertext
-    const result = new Uint8Array(iv.length + ciphertext.byteLength);
-    result.set(iv, 0);
-    result.set(new Uint8Array(ciphertext), iv.length);
-
-    console.log(✅ Encrypted in ${time.toFixed(2)}ms);
-    console.log(`   Plaintext: ${plaintextBytes.length} bytes → Ciphertext: ${result.length} bytes`);
-
-    this.metrics.plaintexts.push(plaintextBytes.length);
-    this.metrics.ciphertexts.push(result.length);
-    this.metrics.times.push(time);
-
-    return {
-      iv,
-      ciphertext: new Uint8Array(ciphertext),
-      combined: result,
-      plaintextSize: plaintextBytes.length,
-      ciphertextSize: new Uint8Array(ciphertext).length
-    };
-  }
-
-  /**
-   * Step 5: Decrypt dengan AES-256-GCM
-   */
-  async decryptWithAES(encryptedData, aesKey) {
-    console.log('🔓 Decrypting with AES-256-GCM...');
-    const start = performance.now();
-
-    // Extract IV dan ciphertext
-    const iv = encryptedData.slice(0, 12);
-    const ciphertext = encryptedData.slice(12);
-
-    // Decrypt
-    const plaintext = await window.crypto.subtle.decrypt(
-      {
-        name: 'AES-GCM',
-        iv: iv
-      },
-      aesKey,
-      ciphertext
-    );
-
-    const time = performance.now() - start;
-    const plaintextString = new TextDecoder().decode(plaintext);
-
-    console.log(✅ Decrypted in ${time.toFixed(2)}ms);
-    console.log(`   Size: ${plaintext.byteLength} bytes`);
-
-    return plaintextString;
-  }
-
-  /**
-   * Encrypt plaintext
-   * Input: plaintext + sender private key + receiver public key
-   * Output: encrypted payload untuk Firebase
-   */
-  async encryptCompleteWorkflow(plaintext, senderPrivateKey, receiverPublicKey) {
-    console.log('\n COMPLETE ENCRYPTION WORKFLOW\n');
-    const workflowStart = performance.now();
+  async encryptCompleteWorkflow(plaintext, senderPrivateKey, recipientPublicKey) {
+    const startTime = performance.now();
 
     try {
-      // 1. ECDH
-      console.log('[1/3] ECDH Key Agreement');
-      const sharedSecret = await this.performECDH(senderPrivateKey, receiverPublicKey);
+      // 1. Derive shared secret using ECDH
+      const sharedSecret = await this.deriveSharedSecret(senderPrivateKey, recipientPublicKey);
 
-      // 2. Derive AES Key
-      console.log('\n[2/3] AES Key Derivation');
-      const aesKey = await this.deriveAESKeyFromSharedSecret(sharedSecret);
+      // 2. Derive AES key from shared secret
+      const aesKey = await this.deriveAESKey(sharedSecret);
 
-      // 3. AES Encrypt
-      console.log('\n[3/3] AES-256-GCM Encryption');
-      const encryptResult = await this.encryptWithAES(plaintext, aesKey);
+      // 3. Generate random IV
+      const iv = crypto.getRandomValues(new Uint8Array(12)); // 96 bits for GCM
 
-      const workflowTime = performance.now() - workflowStart;
+      // 4. Encrypt plaintext with AES-256-GCM
+      const plaintextBytes = new TextEncoder().encode(plaintext);
+      const ciphertext = await crypto.subtle.encrypt(
+        {
+          name: "AES-GCM",
+          iv: iv
+        },
+        aesKey,
+        plaintextBytes
+      );
 
-      console.log('\n  WORKFLOW COMPLETE');
-      console.log(` Total time: ${workflowTime.toFixed(2)}ms\n`);
+      // 5. Combine IV + Ciphertext + Authentication Tag
+      const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+      combined.set(iv, 0);
+      combined.set(new Uint8Array(ciphertext), iv.length);
 
-      // Return encrypted package
+      // 6. Encode to Base64 for storage
+      const encryptedData = btoa(String.fromCharCode(...combined));
+
+      const endTime = performance.now();
+      const workflowTime = endTime - startTime;
+
       return {
-        encryptedData: this.uint8ToBase64(encryptResult.combined),
-        plaintextSize: encryptResult.plaintextSize,
-        ciphertextSize: encryptResult.ciphertextSize,
-        expansion: (encryptResult.combined.length / encryptResult.plaintextSize).toFixed(2),
-        workflowTime: workflowTime,
-        timestamp: new Date().toISOString()
+        encryptedData,
+        plaintextSize: plaintextBytes.length,
+        ciphertextSize: combined.length,
+        expansion: ((combined.length - plaintextBytes.length) / plaintextBytes.length * 100).toFixed(2) + '%',
+        workflowTime: workflowTime.toFixed(2) + 'ms'
       };
+
     } catch (error) {
-      console.error(' Encryption failed:', error);
+      console.error('❌ Encryption failed:', error);
       throw error;
     }
   }
 
   /**
-   *  Decrypt ciphertext
-   * Input: encrypted payload + receiver private key + sender public key
-   * Output: plaintext
+   * Complete decryption workflow
+   * Decrypts AES-ECC encrypted data
+   * 
+   * @param {string} encryptedData - Base64 encrypted data
+   * @param {CryptoKey} recipientPrivateKey - Recipient's private key
+   * @param {CryptoKey} senderPublicKey - Sender's public key
+   * @returns {Promise<Object>} {plaintext: string, workflowTime}
    */
-  async decryptCompleteWorkflow(encryptedPayload, receiverPrivateKey, senderPublicKey) {
-    console.log('\n COMPLETE DECRYPTION WORKFLOW \n');
-    const workflowStart = performance.now();
+  async decryptCompleteWorkflow(encryptedData, recipientPrivateKey, senderPublicKey) {
+    const startTime = performance.now();
 
     try {
-      // 1. ECDH (same as sender)
-      console.log('[1/3] ECDH Key Agreement (regenerate)');
-      const sharedSecret = await this.performECDH(receiverPrivateKey, senderPublicKey);
+      // 1. Decode Base64
+      const combined = new Uint8Array(atob(encryptedData).split('').map(c => c.charCodeAt(0)));
 
-      // 2. Derive AES Key (same as encryption)
-      console.log('\n[2/3] AES Key Derivation');
-      const aesKey = await this.deriveAESKeyFromSharedSecret(sharedSecret);
+      // 2. Extract IV (first 12 bytes) and ciphertext
+      const iv = combined.slice(0, 12);
+      const ciphertext = combined.slice(12);
 
-      // 3. AES Decrypt
-      console.log('\n[3/3] AES-256-GCM Decryption');
-      const encryptedBytes = this.base64ToUint8(encryptedPayload);
-      const plaintext = await this.decryptWithAES(encryptedBytes, aesKey);
+      // 3. Derive shared secret using ECDH (same as encryption)
+      const sharedSecret = await this.deriveSharedSecret(recipientPrivateKey, senderPublicKey);
 
-      const workflowTime = performance.now() - workflowStart;
+      // 4. Derive AES key from shared secret
+      const aesKey = await this.deriveAESKey(sharedSecret);
 
-      console.log('\n WORKFLOW COMPLETE ');
-      console.log(` Total time: ${workflowTime.toFixed(2)}ms\n`);
+      // 5. Decrypt with AES-256-GCM
+      const plaintextBytes = await crypto.subtle.decrypt(
+        {
+          name: "AES-GCM",
+          iv: iv
+        },
+        aesKey,
+        ciphertext
+      );
+
+      // 6. Convert to string
+      const plaintext = new TextDecoder().decode(plaintextBytes);
+
+      const endTime = performance.now();
+      const workflowTime = endTime - startTime;
 
       return {
-        plaintext: plaintext,
-        workflowTime: workflowTime
+        plaintext,
+        workflowTime: workflowTime.toFixed(2) + 'ms'
       };
+
     } catch (error) {
-      console.error(' Decryption failed:', error);
+      console.error('❌ Decryption failed:', error);
       throw error;
     }
-  }
-
-  /**
-   * Utility: Convert Uint8Array to Base64
-   */
-  uint8ToBase64(uint8) {
-    const binary = String.fromCharCode.apply(null, uint8);
-    return btoa(binary);
-  }
-
-  /**
-   * Utility: Convert Base64 to Uint8Array
-   */
-  base64ToUint8(base64) {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-  }
-
-  /**
-   * Generate Security Analysis Report
-   */
-  generateReport() {
-    const totalPlaintext = this.metrics.plaintexts.reduce((a, b) => a + b, 0);
-    const totalCiphertext = this.metrics.ciphertexts.reduce((a, b) => a + b, 0);
-    const avgTime = this.metrics.times.length > 0 
-      ? (this.metrics.times.reduce((a, b) => a + b, 0) / this.metrics.times.length).toFixed(2)
-      : 0;
-
-    return {
-      system: {
-        keyAgreement: 'ECDH P-256',
-        encryption: 'AES-256-GCM',
-        symmetricEquivalent: 'AES-256 (256-bit)',
-        ecdsSymmetricEquivalent: 'ECC P-256 (128-bit)',
-        description: 'AES-ECC hybrid for end-to-end encryption on Firebase'
-      },
-      sizeAnalysis: {
-        totalPlaintextBytes: totalPlaintext,
-        totalCiphertextBytes: totalCiphertext,
-        expansionRatio: totalPlaintext > 0 ? (totalCiphertext / totalPlaintext).toFixed(4) : 0,
-        overheadPerMessage: 12 + 16, 
-        note: 'Fixed overhead ~28 bytes per message'
-      },
-      performance: {
-        averageEncryptionTime: avgTime + 'ms',
-        totalOperations: this.metrics.plaintexts.length,
-        cryptoLibrary: 'Web Crypto API'
-      },
-      security: {
-        keySize: '256-bit AES + 256-bit ECDH',
-        confidentiality: ' Full (AES-256)',
-        integrity: ' Full (AES-GCM auth tag)',
-        keyExchange: 'ECDH P-256',
-        forwardSecrecy: 'Per-message key derivation',
-        endToEnd: ' Private keys never sent to Firebase'
-      }
-    };
   }
 }
 
-// Export
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = AESECCSystem;
+// 📤 Default export untuk compatibility
+export default AESECCSystem;
+
+// 🌍 Global export untuk non-module scripts
+if (typeof window !== 'undefined') {
+  window.AESECCSystem = AESECCSystem;
 }

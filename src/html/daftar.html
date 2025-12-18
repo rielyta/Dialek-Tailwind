@@ -37,6 +37,19 @@
         .loading {
             pointer-events: none;
             opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -65,7 +78,7 @@
                             <input type="text" name="username" id="username" placeholder="johndoe_2112" class="w-full text-sm bg-bg-form px-3 py-2 border-none rounded-lg text-form focus:outline-none" required />
                             <ion-icon name="person" class="pr-4"></ion-icon>
                         </div>
-                        <p class="error-message" id="username-error">Username harus diisi</p>
+                        <p class="error-message" id="username-error">Username harus diisi (min 3 karakter)</p>
                     </div>
                     
                     <div class="mb-4">
@@ -124,13 +137,65 @@
         </div>
     </section>
 
+    <!-- ✅ INLINE CRYPTO MODULES - NO IMPORT NEEDED! -->
+    <script>
+        // ✅ Inline AESECCSystem class - No module import issues!
+        class AESECCSystem {
+            constructor() {
+                this.curve = "P-256";
+            }
+
+            async generateECCKeyPair() {
+                return crypto.subtle.generateKey(
+                    {
+                        name: "ECDH",
+                        namedCurve: this.curve
+                    },
+                    true,
+                    ["deriveKey", "deriveBits"]
+                );
+            }
+
+            async exportPublicKeyToJWK(publicKey) {
+                return crypto.subtle.exportKey("jwk", publicKey);
+            }
+
+            async exportPrivateKey(privateKey) {
+                return crypto.subtle.exportKey("jwk", privateKey);
+            }
+
+            async importPublicKeyFromJWK(jwk) {
+                return crypto.subtle.importKey(
+                    "jwk",
+                    jwk,
+                    { name: "ECDH", namedCurve: this.curve },
+                    true,
+                    []
+                );
+            }
+
+            async importPrivateKeyFromJWK(jwk) {
+                return crypto.subtle.importKey(
+                    "jwk",
+                    jwk,
+                    { name: "ECDH", namedCurve: this.curve },
+                    true,
+                    ["deriveKey", "deriveBits"]
+                );
+            }
+        }
+
+        // ✅ Make globally available
+        window.AESECCSystem = AESECCSystem;
+        console.log("✅ AESECCSystem loaded inline - no module import needed!");
+    </script>
+
     <script type="module">
-        AOS.init();
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+        // ✅ Firebase Config - GANTI DENGAN CONFIG ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
             authDomain: "dialek-6a219.firebaseapp.com",
@@ -147,53 +212,49 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        function generateRandomUsername(length = 7) {
-            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            return result;
-        }
+        console.log("✅ Firebase initialized");
+        console.log("✅ Google Provider initialized");
+        console.log("✅ AESECCSystem available from inline script");
 
-        async function usernameExists(username) {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('username', '==', username.toLowerCase()));
-            const querySnapshot = await getDocs(q);
-            return !querySnapshot.empty;
-        }
-
-        function validateForm() {
-            let isValid = true;
+        // ✅ Form Validation
+        function validateSignupForm() {
             const name = document.getElementById('name').value.trim();
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
+            // Clear all errors
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
 
+            let isValid = true;
+
+            // Validate name
             if (!name) {
                 document.getElementById('name-error').classList.add('show');
                 isValid = false;
             }
 
+            // Validate username
             if (!username || username.length < 3) {
-                document.getElementById('username-error').textContent = 'Username minimal 3 karakter';
                 document.getElementById('username-error').classList.add('show');
                 isValid = false;
             }
 
-            if (!email || !email.includes('@')) {
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
                 document.getElementById('email-error').classList.add('show');
                 isValid = false;
             }
 
+            // Validate password
             if (password.length < 6) {
                 document.getElementById('password-error').classList.add('show');
                 isValid = false;
             }
 
+            // Validate confirm password
             if (password !== confirmPassword) {
                 document.getElementById('confirm-error').classList.add('show');
                 isValid = false;
@@ -202,115 +263,266 @@
             return isValid;
         }
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        // ✅ Set Loading State
+        function setLoadingState(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('loading');
+                button.dataset.originalText = button.textContent;
+                button.innerHTML = '<span class="spinner"></span> Memproses...';
+            } else {
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.textContent = button.dataset.originalText || 'Daftar';
+            }
+        }
+
+        // ✅ Email/Password Signup
+        document.getElementById("signup-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            if (!validateForm()) return;
+            // Validate form
+            if (!validateSignupForm()) {
+                console.log("❌ Form validation failed");
+                return;
+            }
 
             const name = document.getElementById('name').value.trim();
-            const username = document.getElementById('username').value.trim().toLowerCase();
+            const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-
             const btn = document.getElementById('signup-btn');
-            btn.classList.add('loading');
-            btn.textContent = 'Mendaftar...';
+
+            setLoadingState(btn, true);
 
             try {
-                if (await usernameExists(username)) {
-                    alert('Username sudah digunakan!');
-                    btn.classList.remove('loading');
-                    btn.textContent = 'Daftar';
-                    return;
-                }
+                console.log("🔄 Creating Firebase user...");
+                // 1️⃣ Create user in Firebase Auth
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                const user = cred.user;
+                console.log("✅ User created:", user.uid);
 
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+                // 2️⃣ Generate ECC Keys using inline class
+                console.log("🔄 Generating ECC keys...");
+                const cryptoSystem = new window.AESECCSystem();
+                const keyPair = await cryptoSystem.generateECCKeyPair();
+                console.log("✅ ECC keys generated");
 
-                await updateProfile(user, {
-                    displayName: name
-                });
+                const publicKeyJWK = await cryptoSystem.exportPublicKeyToJWK(keyPair.publicKey);
+                const privateKeyJWK = await cryptoSystem.exportPrivateKey(keyPair.privateKey);
 
-                // ✅ FIX: Tambah field yang diperlukan
-                await setDoc(doc(db, 'users', user.uid), {
-                    name: name,
-                    username: username,
-                    email: email,
-                    phone: '',
-                    profile_image: '/src/assets/pp.webp',
-                    firebase_uid: user.uid,
-                    created_at: new Date().toISOString(),
+                // 3️⃣ Store user profile in Firestore
+                console.log("🔄 Storing user profile...");
+                await setDoc(doc(db, "users", user.uid), {
+                    name,
+                    username,
+                    email,
+                    profile_image: null,
                     total_exp: 0,
                     level: 1,
-                    study_duration: 0
+                    study_duration: 0,
+                    created_at: serverTimestamp()
                 });
+                console.log("✅ User profile stored");
 
+                // 4️⃣ Store PUBLIC key in Firestore
+                console.log("🔄 Storing public key...");
+                await setDoc(
+                    doc(db, "users", user.uid, "keys", "public"),
+                    {
+                        key: publicKeyJWK,
+                        algorithm: "ECDH-P256",
+                        createdAt: serverTimestamp()
+                    }
+                );
+                console.log("✅ Public key stored");
+
+                // 5️⃣ Store PRIVATE key in localStorage ONLY
+                console.log("🔄 Storing private key in localStorage...");
+                localStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
+
+                // 6️⃣ Store user data in localStorage for quick access
                 localStorage.setItem('firebase_uid', user.uid);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', email);
                 localStorage.setItem('name', name);
+                localStorage.setItem('profile_image', '');
 
-                alert('Pendaftaran berhasil!');
-                // ✅ FIX: Perbaiki path ke dashboard yang benar
-                window.location.href = "/src/html/dashboard-batak.html";
+                console.log("✅ All data stored successfully");
+                alert("✅ Pendaftaran berhasil! Selamat datang di Dialek.id");
+                
+                // Redirect to dashboard
+                window.location.href = "dashboardBatak.html";
+
             } catch (error) {
-                console.error('Error:', error);
-                btn.classList.remove('loading');
-                btn.textContent = 'Daftar';
+                console.error("❌ Signup Error:", error);
+                setLoadingState(btn, false);
 
+                // Handle specific Firebase errors
                 if (error.code === 'auth/email-already-in-use') {
-                    alert('Email sudah digunakan!');
-                } else if (error.code === 'auth/invalid-email') {
-                    alert('Email tidak valid!');
+                    alert("❌ Email sudah terdaftar! Gunakan email lain atau login.");
                 } else if (error.code === 'auth/weak-password') {
-                    alert('Kata sandi terlalu lemah!');
+                    alert("❌ Password terlalu lemah! Gunakan minimal 6 karakter.");
+                } else if (error.code === 'auth/invalid-email') {
+                    alert("❌ Format email tidak valid!");
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    alert("❌ Operasi tidak diizinkan. Hubungi admin.");
                 } else {
-                    alert('Terjadi kesalahan: ' + error.message);
+                    alert("❌ Error: " + (error.message || "Terjadi kesalahan saat pendaftaran"));
                 }
             }
         });
 
-        document.getElementById('googleLogin').addEventListener('click', async () => {
+        // ✅ Google Sign-Up dengan Enhanced Debugging
+        document.getElementById('googleLogin').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            console.log("🔄 [1] Google button clicked");
+
+            // Validate name and username filled
+            const name = document.getElementById('name').value.trim();
+            const username = document.getElementById('username').value.trim();
+
+            if (!name || !username) {
+                alert("⚠️ Masukkan Nama dan Username terlebih dahulu!");
+                console.warn("⚠️ Name or username empty:", { name, username });
+                return;
+            }
+
+            if (username.length < 3) {
+                alert("⚠️ Username minimal 3 karakter!");
+                console.warn("⚠️ Username terlalu pendek:", username.length);
+                return;
+            }
+
+            const btn = document.getElementById('googleLogin');
+            setLoadingState(btn, true);
+
             try {
+                console.log("🔄 [2] Preparing Google authentication...");
+                console.log("   - Firebase Auth initialized:", !!auth);
+                console.log("   - Google provider created:", !!googleProvider);
+                
+                console.log("🔄 [3] Launching Google popup...");
                 const result = await signInWithPopup(auth, googleProvider);
+                
+                console.log("✅ [4] Google popup success!");
+                console.log("   - User ID:", result.user.uid);
+                console.log("   - Email:", result.user.email);
+                console.log("   - Display Name:", result.user.displayName);
+                console.log("   - Photo URL:", result.user.photoURL);
+
                 const user = result.user;
 
-                let username = generateRandomUsername();
-                while (await usernameExists(username)) {
-                    username = generateRandomUsername();
+                // Check if user already exists
+                console.log("🔄 [5] Checking if user exists in Firestore...");
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                
+                if (!userDoc.exists()) {
+                    console.log("🔄 [6] User is NEW, creating profile...");
+                    
+                    // Generate ECC Keys for new user
+                    const cryptoSystem = new window.AESECCSystem();
+                    const keyPair = await cryptoSystem.generateECCKeyPair();
+
+                    const publicKeyJWK = await cryptoSystem.exportPublicKeyToJWK(keyPair.publicKey);
+                    const privateKeyJWK = await cryptoSystem.exportPrivateKey(keyPair.privateKey);
+
+                    // Store user profile
+                    await setDoc(doc(db, "users", user.uid), {
+                        name: name || user.displayName || "User",
+                        username,
+                        email: user.email,
+                        profile_image: user.photoURL || null,
+                        total_exp: 0,
+                        level: 1,
+                        study_duration: 0,
+                        created_at: serverTimestamp()
+                    });
+                    console.log("✅ [6a] User profile created");
+
+                    // Store public key
+                    await setDoc(
+                        doc(db, "users", user.uid, "keys", "public"),
+                        {
+                            key: publicKeyJWK,
+                            algorithm: "ECDH-P256",
+                            createdAt: serverTimestamp()
+                        }
+                    );
+                    console.log("✅ [6b] Public key stored");
+
+                    // Store private key in localStorage
+                    localStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
+                    console.log("✅ [6c] Private key stored in localStorage");
+
+                } else {
+                    console.log("✅ [5] User already exists in Firestore");
                 }
 
-                // ✅ FIX: Tambah field yang diperlukan
-                await setDoc(doc(db, 'users', user.uid), {
-                    name: user.displayName || 'User',
-                    username: username,
-                    email: user.email,
-                    phone: '',
-                    profile_image: user.photoURL || '/src/assets/pp.webp',
-                    firebase_uid: user.uid,
-                    created_at: new Date().toISOString(),
-                    total_exp: 0,
-                    level: 1,
-                    study_duration: 0
-                });
-
+                // Store user data in localStorage
                 localStorage.setItem('firebase_uid', user.uid);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', user.email);
-                localStorage.setItem('name', user.displayName || 'User');
+                localStorage.setItem('name', name || user.displayName || "User");
+                localStorage.setItem('profile_image', user.photoURL || '');
+                console.log("✅ [7] User data stored in localStorage");
 
-                alert('Pendaftaran berhasil dengan Google!');
-                // ✅ FIX: Perbaiki path ke dashboard yang benar
-                window.location.href = "/src/html/dashboard-batak.html";
+                console.log("✅ [8] Google signup COMPLETE!");
+                alert("✅ Pendaftaran dengan Google berhasil!");
+                
+                // Redirect to dashboard
+                window.location.href = "dashboardBatak.html";
+
             } catch (error) {
-                console.error('Google Signup Error:', error);
-                alert('Terjadi kesalahan: ' + error.message);
+                console.error('❌ [ERROR] Google Sign-up failed:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                
+                setLoadingState(btn, false);
+
+                // Detailed error messages
+                if (error.code === 'auth/popup-closed-by-user') {
+                    console.log("❌ User closed Google popup");
+                    alert("❌ Popup Google ditutup. Silakan coba lagi.");
+                    
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    console.log("❌ Popup request cancelled (multiple requests)");
+                    alert("❌ Request dibatalkan. Silakan tunggu dan coba lagi.");
+                    
+                } else if (error.code === 'auth/popup-blocked') {
+                    console.log("❌ Popup blocked by browser");
+                    alert("❌ Popup diblokir oleh browser. Izinkan popup di browser settings: \n\n1. Klik icon lock/shield di address bar\n2. Cari 'Pop-ups and redirects'\n3. Pilih 'Allow'");
+                    
+                } else if (error.code === 'auth/network-request-failed') {
+                    console.log("❌ Network error");
+                    alert("❌ Koneksi internet bermasalah. Periksa koneksi dan coba lagi.");
+                    
+                } else if (error.code === 'auth/invalid-api-key') {
+                    console.log("❌ Firebase API key invalid");
+                    alert("❌ Firebase config tidak valid. Hubungi admin.");
+                    
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    console.log("❌ Google sign-in not enabled in Firebase");
+                    alert("❌ Google sign-in tidak aktif di Firebase Console.\n\nPastikan:\n1. Go to Firebase Console\n2. Authentication → Sign-in methods\n3. Google → ENABLE\n4. Save");
+                    
+                } else if (error.code === 'auth/internal-error') {
+                    console.log("❌ Firebase internal error");
+                    alert("❌ Firebase error. Coba lagi atau hubungi admin.");
+                    
+                } else {
+                    console.log("❌ Unexpected error:", error.code);
+                    alert("❌ Error: " + (error.message || "Terjadi kesalahan saat login dengan Google"));
+                }
             }
         });
 
+        // ✅ Back to landing page
         document.getElementById('landing-page').addEventListener('click', () => {
             window.location.href = "/index.html";
         });
     </script>
+
 </body>
 </html>

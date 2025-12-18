@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialek.id - Forum Diskusi</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dialek.id - Forum Diskusi (Encrypted)</title>
+    <!-- REMOVED: Tracking prevention issue dengan unpkg -->
+    <!-- <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
+    <!-- ALTERNATIVE: Use local or cdn.jsdelivr.net -->
     <link rel="stylesheet" href="../styles/style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -20,6 +22,38 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .encryption-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        .encrypted-indicator {
+            color: #10b981;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .decryption-error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        /* ✅ NEW: Make questions clickable */
+        .question-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="bg-custom-radial font-inter flex flex-col min-h-screen">
@@ -27,264 +61,522 @@
         <div id="home" class="logo font-irish m-0 text-2xl cursor-pointer">dialek.id</div>
         <div id="profile-button" class="flex items-center m-0 font-semibold text-custom2 cursor-pointer">
             <p id="account-username" class="px-4 text-xl">memuat...</p>
-            <i class="fa-solid fa-user text-2xl"></i> 
+            <i class="fa-solid fa-user text-2xl"></i>
         </div>
     </nav>
 
-    <main class="flex flex-col items-center flex-grow">
-        <div class="flex items-center w-full justify-center mb-10">
-            <h1 class="text-4xl font-bold text-gradient">Wadah Diskusi</h1>
+    <main class="flex-grow mx-auto w-11/12 md:w-4/5 max-w-4xl py-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gradient mb-2">Forum Diskusi Bahasa Batak Toba</h1>
+            <p class="text-gray-600">Tanya, jawab, dan diskusikan tentang Bahasa Batak Toba</p>
         </div>
 
-        <div class="flex items-start w-full px-12">
-            <div class="mx-auto p-6 rounded-lg box-custom1 w-10/12 md:w-8/12 lg:w-6/12" style="background-color: rgba(212, 229, 221, 0.4);"> 
-                <div class="flex space-x-2 mb-4">
-                    <div class="button-custom flex items-center justify-center text-sm py-2 px-4 rounded-full bg-blue-500 text-white">Bahasa Batak Toba</div>
-                </div>
+        <!-- Tombol Tanya Pertanyaan -->
+        <div class="mb-8">
+            <button id="btn-tanya" class="bg-custom1 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90">
+                <i class="fa-solid fa-plus mr-2"></i> Tanya Pertanyaan
+            </button>
+        </div>
 
-                <label for="pertanyaanInput" class="text-lg font-semibold text-green-800">Tulis pertanyaanmu:</label>
-                <textarea id="pertanyaanInput" class="w-full p-3 rounded-lg border-none focus:outline-none text-white" rows="5" placeholder="Ajukan pertanyaanmu di sini..." style="background-color: #4C968B;"></textarea>
-
-                <div class="flex justify-end mt-2">
-                    <button id="tanyaButton" class="bg-green-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-green-700">Tanya</button>
+        <!-- Modal Tanya Pertanyaan -->
+        <div id="modal-tanya" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h2 class="text-2xl font-bold mb-4">Tanya Pertanyaan</h2>
+                <textarea id="input-pertanyaan" class="w-full border border-gray-300 rounded-lg p-3 mb-4" rows="5" placeholder="Tulis pertanyaan Anda..."></textarea>
+                <div class="flex gap-2">
+                    <button id="btn-kirim-pertanyaan" class="bg-custom1 text-white px-4 py-2 rounded-lg flex-1">Kirim</button>
+                    <button id="btn-tutup-modal" class="bg-gray-300 text-black px-4 py-2 rounded-lg">Batal</button>
                 </div>
             </div>
         </div>
 
-        <div class="mt-6 w-10/12 md:w-8/12 lg:w-6/12">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-lg font-semibold text-green-800">Pertanyaan Lain:</h2>
-                <div class="flex space-x-1">
-                    <button id="terbaruButton" class="button-custom2 text-white opacity-100">Terbaru</button>
-                    <button id="popularButton" class="button-custom2 text-white">Popular</button>
-                </div>
+        <!-- Daftar Pertanyaan -->
+        <div id="pertanyaan-list" class="space-y-6">
+            <div class="text-center py-8">
+                <div class="loading-spinner"></div>
+                <p class="mt-2">Memuat pertanyaan...</p>
             </div>
-
-            <div id="loading-container" class="text-center py-8 hidden">
-                <span class="loading-spinner"></span> Memuat...
-            </div>
-
-            <div id="pertanyaanList" class="space-y-2"></div>
         </div>
     </main>
 
+    <!-- ✅ INLINE ENCRYPTION CLASSES - NO IMPORT NEEDED! -->
+    <script>
+        // ✅ Inline AESECCSystem class
+        class AESECCSystem {
+            constructor() {
+                this.curve = "P-256";
+            }
+
+            async generateECCKeyPair() {
+                return crypto.subtle.generateKey(
+                    {
+                        name: "ECDH",
+                        namedCurve: this.curve
+                    },
+                    true,
+                    ["deriveKey", "deriveBits"]
+                );
+            }
+
+            async exportPublicKeyToJWK(publicKey) {
+                return crypto.subtle.exportKey("jwk", publicKey);
+            }
+
+            async exportPrivateKey(privateKey) {
+                return crypto.subtle.exportKey("jwk", privateKey);
+            }
+
+            async importPublicKeyFromJWK(jwk) {
+                return crypto.subtle.importKey(
+                    "jwk",
+                    jwk,
+                    { name: "ECDH", namedCurve: this.curve },
+                    true,
+                    []
+                );
+            }
+
+            async importPrivateKeyFromJWK(jwk) {
+                return crypto.subtle.importKey(
+                    "jwk",
+                    jwk,
+                    { name: "ECDH", namedCurve: this.curve },
+                    true,
+                    ["deriveKey", "deriveBits"]
+                );
+            }
+
+            async deriveSharedSecret(privateKey, publicKey) {
+                return crypto.subtle.deriveBits(
+                    {
+                        name: "ECDH",
+                        public: publicKey
+                    },
+                    privateKey,
+                    256
+                );
+            }
+
+            async deriveAESKey(sharedSecret) {
+                const hkdfKey = await crypto.subtle.importKey(
+                    "raw",
+                    sharedSecret,
+                    { name: "HMAC", hash: "SHA-256" },
+                    false,
+                    ["sign"]
+                );
+
+                const derivedBits = await crypto.subtle.sign(
+                    "HMAC",
+                    hkdfKey,
+                    new TextEncoder().encode("AES-KEY-DERIVATION")
+                );
+
+                return crypto.subtle.importKey(
+                    "raw",
+                    derivedBits.slice(0, 32),
+                    { name: "AES-GCM" },
+                    false,
+                    ["encrypt", "decrypt"]
+                );
+            }
+
+            async encryptCompleteWorkflow(plaintext, senderPrivateKey, recipientPublicKey) {
+                const startTime = performance.now();
+
+                try {
+                    const sharedSecret = await this.deriveSharedSecret(senderPrivateKey, recipientPublicKey);
+                    const aesKey = await this.deriveAESKey(sharedSecret);
+                    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                    const plaintextBytes = new TextEncoder().encode(plaintext);
+                    const ciphertext = await crypto.subtle.encrypt(
+                        {
+                            name: "AES-GCM",
+                            iv: iv
+                        },
+                        aesKey,
+                        plaintextBytes
+                    );
+
+                    const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+                    combined.set(iv, 0);
+                    combined.set(new Uint8Array(ciphertext), iv.length);
+
+                    const encryptedData = btoa(String.fromCharCode(...combined));
+
+                    const endTime = performance.now();
+
+                    return {
+                        encryptedData,
+                        plaintextSize: plaintextBytes.length,
+                        ciphertextSize: combined.length,
+                        expansion: ((combined.length - plaintextBytes.length) / plaintextBytes.length * 100).toFixed(2) + '%',
+                        workflowTime: (endTime - startTime).toFixed(2) + 'ms'
+                    };
+
+                } catch (error) {
+                    console.error('❌ Encryption failed:', error);
+                    throw error;
+                }
+            }
+
+            async decryptCompleteWorkflow(encryptedData, recipientPrivateKey, senderPublicKey) {
+                const startTime = performance.now();
+
+                try {
+                    const combined = new Uint8Array(atob(encryptedData).split('').map(c => c.charCodeAt(0)));
+                    const iv = combined.slice(0, 12);
+                    const ciphertext = combined.slice(12);
+
+                    const sharedSecret = await this.deriveSharedSecret(recipientPrivateKey, senderPublicKey);
+                    const aesKey = await this.deriveAESKey(sharedSecret);
+
+                    const plaintextBytes = await crypto.subtle.decrypt(
+                        {
+                            name: "AES-GCM",
+                            iv: iv
+                        },
+                        aesKey,
+                        ciphertext
+                    );
+
+                    const plaintext = new TextDecoder().decode(plaintextBytes);
+
+                    const endTime = performance.now();
+
+                    return {
+                        plaintext,
+                        workflowTime: (endTime - startTime).toFixed(2) + 'ms'
+                    };
+
+                } catch (error) {
+                    console.error('❌ Decryption failed:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // ✅ Inline FirebaseAESECC class
+        class FirebaseAESECC {
+            constructor(db, cryptoSystem) {
+                this.db = db;
+                this.crypto = cryptoSystem;
+            }
+
+            async getPublicKey(userId) {
+                const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js');
+
+                try {
+                    const publicKeyDoc = await getDoc(doc(this.db, 'users', userId, 'keys', 'public'));
+                    
+                    if (!publicKeyDoc.exists()) {
+                        throw new Error(`Public key not found for user ${userId}`);
+                    }
+
+                    const jwk = publicKeyDoc.data().key;
+                    const publicKey = await this.crypto.importPublicKeyFromJWK(jwk);
+
+                    return publicKey;
+                } catch (error) {
+                    console.error('❌ Failed to get public key:', error);
+                    throw error;
+                }
+            }
+
+            async getForumQuestions() {
+                const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js');
+
+                try {
+                    const forumCollection = collection(this.db, 'forum_questions');
+                    const snapshot = await getDocs(forumCollection);
+
+                    const questions = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+
+                    return questions;
+                } catch (error) {
+                    console.error('❌ Failed to get forum questions:', error);
+                    throw error;
+                }
+            }
+
+            async postForumQuestion(userId, question, userPrivateKey) {
+                const { doc, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js');
+
+                try {
+                    const userPublicKey = await this.getPublicKey(userId);
+
+                    const encrypted = await this.crypto.encryptCompleteWorkflow(
+                        question,
+                        userPrivateKey,
+                        userPublicKey
+                    );
+
+                    await addDoc(collection(this.db, 'forum_questions'), {
+                        encryptedContent: encrypted.encryptedData,
+                        userId,
+                        username: localStorage.getItem('username'),
+                        createdAt: serverTimestamp()
+                    });
+
+                    return encrypted;
+                } catch (error) {
+                    console.error('❌ Failed to post question:', error);
+                    throw error;
+                }
+            }
+
+            async decryptForumQuestion(encryptedQuestion, viewerPrivateKey, authorId) {
+                try {
+                    const authorPublicKey = await this.getPublicKey(authorId);
+
+                    const decrypted = await this.crypto.decryptCompleteWorkflow(
+                        encryptedQuestion,
+                        viewerPrivateKey,
+                        authorPublicKey
+                    );
+
+                    return decrypted.plaintext;
+                } catch (error) {
+                    console.error('❌ Failed to decrypt question:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // ✅ Make globally available
+        window.AESECCSystem = AESECCSystem;
+        window.FirebaseAESECC = FirebaseAESECC;
+        console.log("✅ AESECCSystem & FirebaseAESECC loaded inline");
+
+        // ✅ NEW: Function to navigate to answer page
+        window.goToAnswer = function(questionId) {
+            console.log('🔗 Navigating to answer page for question:', questionId);
+            sessionStorage.setItem('questionId', questionId);
+            window.location.href = 'forum-diskusi-jawab.html';
+        };
+    </script>
+
+    <!-- ✅ MAIN APPLICATION SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
             authDomain: "dialek-6a219.firebaseapp.com",
+            databaseURL: "https://dialek-6a219-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "dialek-6a219",
             storageBucket: "dialek-6a219.firebasestorage.app",
             messagingSenderId: "423916223695",
-            appId: "1:423916223695:web:449bd44c54cad998d8cbba"
+            appId: "1:423916223695:web:449bd44c54cad998d8cbba",
+            measurementId: "G-4SLBH47WTM"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        console.log("✅ Firebase initialized");
+
+        // ✅ ENCRYPTION SYSTEM INITIALIZATION
+        let cryptoSystem = null;
+        let firebaseManager = null;
+        let userPrivateKey = null;
+        let encryptionEnabled = false;
         let currentUser = null;
-        let pertanyaanArray = [];
 
-        const elements = {
-            input: document.getElementById('pertanyaanInput'),
-            tanyaBtn: document.getElementById('tanyaButton'),
-            list: document.getElementById('pertanyaanList'),
-            loading: document.getElementById('loading-container'),
-            terbaruBtn: document.getElementById('terbaruButton'),
-            popularBtn: document.getElementById('popularButton')
-        };
-
-        function showLoading(show) {
-            elements.loading.classList.toggle('hidden', !show);
-        }
-
-        async function loadPertanyaan() {
+        // Initialize encryption
+        async function initializeEncryption() {
             try {
-                showLoading(true);
-                const q = query(collection(db, 'forum_questions'), orderBy('created_at', 'desc'));
-                const snapshot = await getDocs(q);
-                
-                pertanyaanArray = [];
-                snapshot.forEach(doc => {
-                    pertanyaanArray.push({ id: doc.id, ...doc.data() });
-                });
+                if (!window.AESECCSystem) {
+                    console.warn('⚠️ AESECCSystem not available');
+                    return;
+                }
 
-                renderPertanyaan(pertanyaanArray);
+                cryptoSystem = new window.AESECCSystem();
+                
+                if (window.FirebaseAESECC) {
+                    firebaseManager = new window.FirebaseAESECC(db, cryptoSystem);
+                    console.log('✅ Encryption system initialized');
+                } else {
+                    console.warn('⚠️ FirebaseAESECC not available');
+                }
             } catch (error) {
-                console.error("Error loading:", error);
-                alert("Gagal memuat pertanyaan: " + error.message);
-            } finally {
-                showLoading(false);
+                console.error('❌ Failed to initialize encryption:', error);
             }
         }
 
-        function renderPertanyaan(array) {
-            elements.list.innerHTML = '';
-            
-            if (!array.length) {
-                elements.list.innerHTML = '<p class="text-gray-600 text-center py-8">Belum ada pertanyaan</p>';
+        // Load private key
+        async function loadPrivateKey(userId) {
+            try {
+                const privateKeyJSON = localStorage.getItem(`privKey_${userId}`);
+                
+                if (!privateKeyJSON) {
+                    console.warn('⚠️ No private key found - encryption disabled');
+                    encryptionEnabled = false;
+                    return null;
+                }
+
+                const privateKeyJWK = JSON.parse(privateKeyJSON);
+                userPrivateKey = await cryptoSystem.importPrivateKeyFromJWK(privateKeyJWK);
+                encryptionEnabled = true;
+                console.log('✅ Private key loaded');
+                
+                return userPrivateKey;
+            } catch (error) {
+                console.error('❌ Failed to load private key:', error);
+                console.warn('⚠️ Encryption disabled');
+                encryptionEnabled = false;
+                return null;
+            }
+        }
+
+        // Load pertanyaan
+        async function loadPertanyaan() {
+            try {
+                const pertanyaanList = document.getElementById('pertanyaan-list');
+                pertanyaanList.innerHTML = '<div class="text-center py-8"><div class="loading-spinner"></div><p class="mt-2">Memuat pertanyaan...</p></div>';
+
+                if (!firebaseManager) {
+                    throw new Error('Encryption system not initialized');
+                }
+
+                const questions = await firebaseManager.getForumQuestions();
+                
+                if (questions.length === 0) {
+                    pertanyaanList.innerHTML = '<p class="text-center text-gray-500 py-8">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p>';
+                    return;
+                }
+
+                pertanyaanList.innerHTML = '';
+
+                for (const question of questions) {
+                    let content = '[Terenkripsi]';
+                    let isEncrypted = true;
+
+                    if (encryptionEnabled && userPrivateKey) {
+                        try {
+                            content = await firebaseManager.decryptForumQuestion(
+                                question.encryptedContent,
+                                userPrivateKey,
+                                question.userId
+                            );
+                            isEncrypted = false;
+                        } catch (err) {
+                            console.error('Decryption error:', err);
+                            content = '[Tidak bisa didekripsi]';
+                        }
+                    }
+
+                    // ✅ UPDATED: Added click handler with question-card class
+                    const questionHTML = `
+                        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-custom1 question-card" onclick="goToAnswer('${question.id}')">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-bold text-lg text-custom2">${question.username || 'Pengguna'}</h3>
+                                    <p class="text-sm text-gray-500">${question.createdAt ? new Date(question.createdAt.seconds * 1000).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</p>
+                                </div>
+                                ${!isEncrypted ? '<span class="encryption-badge">🔒 Terenkripsi</span>' : '<span class="encryption-badge">🔓 Plain</span>'}
+                            </div>
+                            <p class="text-gray-700 mb-4">${content}</p>
+                        </div>
+                    `;
+
+                    pertanyaanList.insertAdjacentHTML('beforeend', questionHTML);
+                }
+
+                console.log('✅ Forum with encryption loaded successfully');
+
+            } catch (error) {
+                console.error('❌ Load error:', error);
+                const pertanyaanList = document.getElementById('pertanyaan-list');
+                pertanyaanList.innerHTML = `<div class="decryption-error">⚠️ Error loading questions: ${error.message}</div>`;
+            }
+        }
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("✅ User logged in:", user.uid);
+                currentUser = user;
+                document.getElementById('account-username').textContent = localStorage.getItem('username') || 'Pengguna';
+
+                // Initialize encryption
+                await initializeEncryption();
+
+                // Load private key
+                await loadPrivateKey(user.uid);
+
+                // Load pertanyaan
+                await loadPertanyaan();
+
+            } else {
+                console.log("❌ No user logged in");
+                alert("Silakan login terlebih dahulu");
+                window.location.href = "masuk.html";
+            }
+        });
+
+        // Modal handlers
+        document.getElementById('btn-tanya').addEventListener('click', () => {
+            document.getElementById('modal-tanya').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-tutup-modal').addEventListener('click', () => {
+            document.getElementById('modal-tanya').classList.add('hidden');
+        });
+
+        document.getElementById('btn-kirim-pertanyaan').addEventListener('click', async () => {
+            const pertanyaan = document.getElementById('input-pertanyaan').value.trim();
+
+            if (!pertanyaan) {
+                alert('Pertanyaan tidak boleh kosong!');
                 return;
             }
 
-            array.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center p-3 rounded-lg shadow-md text-white cursor-pointer hover:shadow-lg';
-                div.style.backgroundColor = '#4C968B';
-                
-                const text = (item.text || '').substring(0, 100);
-                const likes = item.likes || 0;
-                const answers = item.answers_count || 0;
-                const liked = item.likedBy?.includes(currentUser?.uid);
-
-                div.innerHTML = `
-                    <img src="${item.userProfileImage || 'https://img.icons8.com/color/48/user.png'}" class="w-8 h-8 rounded-full mr-3 object-cover"/>
-                    <div class="flex-grow">
-                        <span class="font-semibold">${item.username || 'Anonymous'}</span>
-                        <p class="text-sm">${text}${text.length >= 100 ? '...' : ''}</p>
-                        <span class="text-xs text-gray-300">${new Date(item.created_at).toLocaleString('id-ID')}</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="text-center">
-                            <div class="text-xs">Jawaban</div>
-                            <div class="font-bold">${answers}</div>
-                        </div>
-                        <button class="jawab-btn bg-green-800 py-1 px-3 rounded-full text-sm hover:bg-green-600">Jawab</button>
-                        <button class="like-btn flex items-center gap-1" data-id="${item.id}" data-liked="${liked}">
-                            <i class="fas fa-heart" style="${liked ? 'color:#ef4444' : ''}"></i>
-                            <span>${likes}</span>
-                        </button>
-                    </div>
-                `;
-
-                div.querySelector('.jawab-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    window.location.href = `forum-diskusi-jawab.html?questionId=${item.id}`;
-                };
-
-                div.querySelector('.like-btn').onclick = async (e) => {
-                    e.stopPropagation();
-                    if (!currentUser) return alert('Login dulu');
-                    
-                    const btn = e.currentTarget;
-                    const isLiked = btn.dataset.liked === 'true';
-                    const icon = btn.querySelector('i');
-                    const span = btn.querySelector('span');
-                    
-                    try {
-                        let newLikes = likes;
-                        let newLikedBy = [...(item.likedBy || [])];
-                        
-                        if (isLiked) {
-                            newLikes--;
-                            newLikedBy = newLikedBy.filter(uid => uid !== currentUser.uid);
-                            icon.style.color = '';
-                            btn.dataset.liked = 'false';
-                        } else {
-                            newLikes++;
-                            newLikedBy.push(currentUser.uid);
-                            icon.style.color = '#ef4444';
-                            btn.dataset.liked = 'true';
-                        }
-
-                        await updateDoc(doc(db, 'forum_questions', item.id), {
-                            likes: newLikes,
-                            likedBy: newLikedBy
-                        });
-
-                        span.textContent = newLikes;
-                        item.likes = newLikes;
-                        item.likedBy = newLikedBy;
-                    } catch (error) {
-                        console.error("Like error:", error);
-                        alert("Gagal like: " + error.message);
-                    }
-                };
-
-                div.onclick = () => window.location.href = `forum-diskusi-jawab.html?questionId=${item.id}`;
-                elements.list.appendChild(div);
-            });
-        }
-
-        elements.tanyaBtn.onclick = async () => {
-            if (!currentUser) return alert('Login dulu');
-            
-            const text = elements.input.value.trim();
-            if (!text) return alert('Tulis pertanyaan dulu');
-
-            try {
-                elements.tanyaBtn.disabled = true;
-                elements.tanyaBtn.innerHTML = '<span class="loading-spinner"></span> Mengirim...';
-
-                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-                const userData = userDoc.data();
-
-                await addDoc(collection(db, 'forum_questions'), {
-                    text,
-                    userId: currentUser.uid,
-                    username: userData?.username || 'Anonymous',
-                    userProfileImage: userData?.profile_image || null,
-                    likes: 0,
-                    likedBy: [],
-                    category: 'Bahasa Batak Toba',
-                    created_at: new Date().toISOString(),
-                    answers_count: 0
-                });
-
-                elements.input.value = '';
-                alert('Pertanyaan berhasil diposting!');
-                await loadPertanyaan();
-            } catch (error) {
-                console.error("Post error:", error);
-                alert("Gagal posting: " + error.message);
-            } finally {
-                elements.tanyaBtn.disabled = false;
-                elements.tanyaBtn.textContent = 'Tanya';
-            }
-        };
-
-        elements.terbaruBtn.onclick = () => {
-            const sorted = [...pertanyaanArray].sort((a, b) => 
-                new Date(b.created_at) - new Date(a.created_at)
-            );
-            elements.terbaruBtn.classList.add('opacity-100');
-            elements.popularBtn.classList.remove('opacity-100');
-            renderPertanyaan(sorted);
-        };
-
-        elements.popularBtn.onclick = () => {
-            const sorted = [...pertanyaanArray].sort((a, b) => 
-                (b.likes || 0) - (a.likes || 0)
-            );
-            elements.popularBtn.classList.add('opacity-100');
-            elements.terbaruBtn.classList.remove('opacity-100');
-            renderPertanyaan(sorted);
-        };
-
-        document.getElementById('home').onclick = () => window.location.href = './dashboardBatak.html';
-        document.getElementById('profile-button').onclick = () => window.location.href = './akun-pengguna.html';
-
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                alert('Login dulu');
-                return window.location.href = './masuk.html';
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu');
+                return;
             }
 
-            currentUser = user;
+            if (!encryptionEnabled || !userPrivateKey || !firebaseManager) {
+                alert('⚠️ Sistem enkripsi tidak siap. Pastikan Anda telah signup dengan benar.');
+                return;
+            }
+
             try {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    document.getElementById('account-username').textContent = 
-                        userDoc.data().username || 'User';
-                }
+                await firebaseManager.postForumQuestion(currentUser.uid, pertanyaan, userPrivateKey);
+                alert('✅ Pertanyaan berhasil dikirim!');
+                document.getElementById('input-pertanyaan').value = '';
+                document.getElementById('modal-tanya').classList.add('hidden');
                 await loadPertanyaan();
             } catch (error) {
-                console.error("Auth error:", error);
+                console.error('Error posting question:', error);
+                alert('❌ Error: ' + error.message);
             }
         });
+
+        // Navigation
+        document.getElementById('home').addEventListener('click', () => {
+            window.location.href = "dashboardBatak.html";
+        });
+
+        document.getElementById('profile-button').addEventListener('click', () => {
+            window.location.href = "akun-pengguna.html";
+        });
     </script>
+
 </body>
 </html>
