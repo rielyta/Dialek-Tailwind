@@ -146,6 +146,19 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
+        // After Firebase Auth signup
+        const crypto = new AESECCSystem();
+        const keyPair = await crypto.generateECCKeyPair();
+        const publicKeyJWK = await crypto.exportPublicKeyToJWK(keyPair.publicKey);
+
+        // Store public key
+        await db.collection('users').doc(userId).collection('keys').doc('public').set({
+        key: publicKeyJWK,
+        algorithm: 'ECC-P256'
+        });
+
+        // Store private key locally
+        localStorage.setItem(`privKey_${userId}`, keyPair.privateKey);
 
         function generateRandomUsername(length = 7) {
             const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -252,7 +265,7 @@
 
                 alert('Pendaftaran berhasil!');
                 // ✅ FIX: Perbaiki path ke dashboard yang benar
-                window.location.href = "/src/html/dashboard-batak.html";
+                window.location.href = "/src/html/dashboardBatak.html";
             } catch (error) {
                 console.error('Error:', error);
                 btn.classList.remove('loading');
@@ -300,8 +313,7 @@
                 localStorage.setItem('name', user.displayName || 'User');
 
                 alert('Pendaftaran berhasil dengan Google!');
-                // ✅ FIX: Perbaiki path ke dashboard yang benar
-                window.location.href = "/src/html/dashboard-batak.html";
+                window.location.href = "/src/html/dashboardBatak.html";
             } catch (error) {
                 console.error('Google Signup Error:', error);
                 alert('Terjadi kesalahan: ' + error.message);

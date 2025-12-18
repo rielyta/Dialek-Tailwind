@@ -20,6 +20,187 @@
             pointer-events: none;
             background-color: #9ca3af !important;
         }
+
+        /* ✅ FIXED: Testing Section Styling */
+        .testing-section {
+            margin-top: 60px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .testing-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .testing-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .testing-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .testing-container textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .testing-container textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .encrypt-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .encrypt-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .encrypt-button:active {
+            transform: translateY(0);
+        }
+
+        #test-result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #10b981;
+            display: none;
+        }
+
+        #test-result h3 {
+            color: #10b981;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        #test-result p {
+            margin: 12px 0;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        #test-result strong {
+            color: #333;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        #test-result span {
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: block;
+            margin-top: 5px;
+            overflow-x: auto;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .metric-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border-left: 4px solid #c33;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border-left: 4px solid #3c3;
+        }
     </style>
 </head>
 <body class="bg-custom-radial font-inter flex flex-col min-h-screen">
@@ -174,6 +355,7 @@
                 </li>
             </ul>
         </div>
+
     </section>
 
     <script type="module">
@@ -235,5 +417,208 @@
             window.location.href = "../../index.html";
         });
     </script>
+
+    <!-- ✅ AES-ECC System Class -->
+    <script>
+        class AESECCSystem {
+            constructor() {
+                this.metrics = { plaintexts: [], ciphertexts: [], times: [] };
+            }
+
+            async generateECCKeyPair() {
+                const keyPair = await window.crypto.subtle.generateKey(
+                    { name: 'ECDH', namedCurve: 'P-256' },
+                    true,
+                    ['deriveBits', 'deriveKey']
+                );
+                return { publicKey: keyPair.publicKey, privateKey: keyPair.privateKey };
+            }
+
+            async performECDH(privateKey, publicKeyRemote) {
+                const sharedSecret = await window.crypto.subtle.deriveBits(
+                    { name: 'ECDH', public: publicKeyRemote },
+                    privateKey,
+                    256
+                );
+                return new Uint8Array(sharedSecret);
+            }
+
+            async deriveAESKeyFromSharedSecret(sharedSecret) {
+                const ikm = await window.crypto.subtle.importKey(
+                    'raw', sharedSecret,
+                    { name: 'HMAC', hash: 'SHA-256' },
+                    false, ['sign']
+                );
+
+                const keyMaterial = await window.crypto.subtle.deriveBits(
+                    {
+                        name: 'HKDF',
+                        hash: 'SHA-256',
+                        salt: new Uint8Array(32),
+                        info: new TextEncoder().encode('dialek-id-aes-ecc')
+                    },
+                    ikm, 256
+                );
+
+                const aesKey = await window.crypto.subtle.importKey(
+                    'raw', keyMaterial,
+                    { name: 'AES-GCM' },
+                    false, ['encrypt', 'decrypt']
+                );
+
+                return aesKey;
+            }
+
+            async encryptWithAES(plaintext, aesKey) {
+                const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                const plaintextBytes = new TextEncoder().encode(plaintext);
+
+                const ciphertext = await window.crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    aesKey, plaintextBytes
+                );
+
+                const result = new Uint8Array(iv.length + ciphertext.byteLength);
+                result.set(iv, 0);
+                result.set(new Uint8Array(ciphertext), iv.length);
+
+                this.metrics.plaintexts.push(plaintextBytes.length);
+                this.metrics.ciphertexts.push(result.length);
+
+                return {
+                    iv, ciphertext: new Uint8Array(ciphertext), combined: result,
+                    plaintextSize: plaintextBytes.length,
+                    ciphertextSize: new Uint8Array(ciphertext).length
+                };
+            }
+
+            async decryptWithAES(encryptedData, aesKey) {
+                const iv = encryptedData.slice(0, 12);
+                const ciphertext = encryptedData.slice(12);
+
+                const plaintext = await window.crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    aesKey, ciphertext
+                );
+
+                return new TextDecoder().decode(plaintext);
+            }
+
+            async encryptCompleteWorkflow(plaintext, senderPrivateKey, receiverPublicKey) {
+                const start = performance.now();
+
+                const ecdhResult = await this.performECDH(senderPrivateKey, receiverPublicKey);
+                const aesKey = await this.deriveAESKeyFromSharedSecret(ecdhResult);
+                const encryptResult = await this.encryptWithAES(plaintext, aesKey);
+
+                const time = performance.now() - start;
+
+                return {
+                    encryptedData: this.uint8ToBase64(encryptResult.combined),
+                    plaintextSize: encryptResult.plaintextSize,
+                    ciphertextSize: encryptResult.ciphertextSize,
+                    expansion: (encryptResult.combined.length / encryptResult.plaintextSize).toFixed(2),
+                    workflowTime: time
+                };
+            }
+
+            async decryptCompleteWorkflow(encryptedPayload, receiverPrivateKey, senderPublicKey) {
+                const start = performance.now();
+
+                const ecdhResult = await this.performECDH(receiverPrivateKey, senderPublicKey);
+                const aesKey = await this.deriveAESKeyFromSharedSecret(ecdhResult);
+                const encryptedBytes = this.base64ToUint8(encryptedPayload);
+                const plaintext = await this.decryptWithAES(encryptedBytes, aesKey);
+
+                const time = performance.now() - start;
+
+                return { plaintext, workflowTime: time };
+            }
+
+            uint8ToBase64(uint8) {
+                return btoa(String.fromCharCode.apply(null, uint8));
+            }
+
+            base64ToUint8(base64) {
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                return bytes;
+            }
+        }
+
+        // Initialize
+        const crypto = new AESECCSystem();
+        let currentKeys = null;
+
+        async function testEncryptDecrypt() {
+            try {
+                const plaintext = document.getElementById('test-plaintext').value;
+                
+                if (!plaintext) {
+                    showError('❌ Masukkan teks dulu!');
+                    return;
+                }
+
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('encrypt-button').disabled = true;
+
+                // Generate keys jika belum ada
+                if (!currentKeys) {
+                    currentKeys = await crypto.generateECCKeyPair();
+                }
+
+                // Encrypt
+                const encrypted = await crypto.encryptCompleteWorkflow(
+                    plaintext,
+                    currentKeys.privateKey,
+                    currentKeys.publicKey
+                );
+
+                // Decrypt
+                const decrypted = await crypto.decryptCompleteWorkflow(
+                    encrypted.encryptedData,
+                    currentKeys.privateKey,
+                    currentKeys.publicKey
+                );
+
+                // Display results
+                document.getElementById('result-plaintext').textContent = plaintext;
+                document.getElementById('result-ciphertext').textContent = encrypted.encryptedData.substring(0, 100) + '...';
+                document.getElementById('result-decrypted').textContent = decrypted.plaintext;
+                document.getElementById('metric-pt').textContent = encrypted.plaintextSize;
+                document.getElementById('metric-ct').textContent = encrypted.ciphertextSize;
+                document.getElementById('metric-ratio').textContent = encrypted.expansion;
+                document.getElementById('metric-time').textContent = encrypted.workflowTime.toFixed(2);
+                document.getElementById('test-result').style.display = 'block';
+
+                showSuccess('✅ Encryption & Decryption Successful! Message verified.');
+
+            } catch (error) {
+                showError('❌ Error: ' + error.message);
+                console.error(error);
+            } finally {
+                document.getElementById('encrypt-button').disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // Attach function to button
+        window.testEncryptDecrypt = testEncryptDecrypt;
+    </script>
+    
 </body>
 </html>

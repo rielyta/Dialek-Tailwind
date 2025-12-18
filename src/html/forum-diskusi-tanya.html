@@ -98,6 +98,29 @@
             popularBtn: document.getElementById('popularButton')
         };
 
+        await firebaseManager.postForumQuestion(
+        userId,
+        questionText,
+        userPrivateKey
+        );
+
+        await firebaseManager.sendEncryptedMessage(
+        senderUserId,
+        recipientUserId,
+        messageText,
+        senderPrivateKey
+        );
+
+        const messages = await firebaseManager.getReceivedMessages(userId);
+            for (const msg of messages) {
+            const plaintext = await firebaseManager.decryptReceivedMessage(
+                msg.encryptedContent,
+                userPrivateKey,
+                msg.senderId
+            );
+            console.log('Decrypted:', plaintext);
+            }
+
         function showLoading(show) {
             elements.loading.classList.toggle('hidden', !show);
         }
