@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pengaturan - Dialek.id (Encrypted)</title>
+  <title>Pengaturan - Dialek.id ✅</title>
   <link rel="stylesheet" href="../styles/style2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
@@ -42,26 +42,6 @@
     }
     .error-banner.show {
       display: block;
-    }
-    .encryption-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      margin-top: 1.5rem;
-    }
-    .encryption-section h3 {
-      margin-top: 0;
-    }
-    .key-status {
-      background: rgba(255,255,255,0.2);
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin: 1rem 0;
-      font-family: monospace;
-      font-size: 0.85rem;
-      max-height: 100px;
-      overflow-y: auto;
     }
     .success-banner {
       background: #efe;
@@ -109,7 +89,7 @@
 
   <div class="flex flex-col items-center p-8 w-11/12 md:w-8/12 lg:w-6/12 bg-white bg-opacity-30 rounded-3xl shadow-lg border-[1.5px] border-bar">
 
-    <!-- FOTO -->
+    <!-- FOTO PROFIL -->
     <label class="relative cursor-pointer">
       <img id="profile-image" src="../assets/pp.webp"
            class="w-24 h-24 rounded-full object-cover bg-gray-200"/>
@@ -119,7 +99,7 @@
       </span>
     </label>
 
-    <!-- FORM -->
+    <!-- FORM PENGATURAN -->
     <form class="w-full mt-6 space-y-4" id="settings-form">
       <div class="flex gap-6">
         <div class="flex flex-col w-1/2">
@@ -144,42 +124,6 @@
       </div>
     </form>
 
-    <!-- ✅ ENCRYPTION MANAGEMENT SECTION -->
-    <div class="encryption-section w-full">
-      <h3>🔐 Manajemen Enkripsi</h3>
-      
-      <p style="font-size: 0.95rem; margin: 1rem 0;">
-        Profil dan pesan Anda dapat dienkripsi end-to-end dengan AES-256-GCM + ECDH P-256.
-      </p>
-
-      <!-- Key Status -->
-      <div>
-        <p class="font-semibold mb-2">Status Kunci Enkripsi:</p>
-        <div id="key-status" class="key-status">
-          <p id="key-status-text">Memeriksa...</p>
-        </div>
-      </div>
-
-      <!-- Key Actions -->
-      <div class="flex flex-col gap-2 mt-4">
-        <button id="generate-keys-btn" class="w-full py-2 px-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 font-semibold transition" style="display: none;">
-          🔑 Generate Keys Baru
-        </button>
-        <button id="export-key-btn" class="w-full py-2 px-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 font-semibold transition" style="display: none;">
-          📥 Backup Private Key
-        </button>
-        <button id="import-key-btn" class="w-full py-2 px-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 font-semibold transition" style="display: none;">
-          📤 Restore Private Key
-        </button>
-        <button id="encrypt-profile-btn" class="w-full py-2 px-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 font-semibold transition" style="display: none;">
-          🔒 Enkripsi Profil Saya
-        </button>
-      </div>
-
-      <!-- Hidden file inputs -->
-      <input type="file" id="key-import-input" accept=".json" hidden>
-    </div>
-
     <div class="flex w-full gap-4 mt-6">
       <button id="delete-btn" class="flex-1 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
         Hapus Akun
@@ -193,23 +137,20 @@
   </div>
 </section>
 
-<!-- ✅ ENCRYPTION CLASSES -->
-<script src="../js/aes_ecc_system.js"></script>
-<script src="../js/firebase_aes_ecc.js"></script>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
+// ✅ FIXED: Gunakan environment variables untuk API key
 const firebaseConfig = {
-  apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
-  authDomain: "dialek-6a219.firebaseapp.com",
-  projectId: "dialek-6a219",
-  storageBucket: "dialek-6a219.firebasestorage.app",
-  messagingSenderId: "423916223695",
-  appId: "1:423916223695:web:449bd44c54cad998d8cbba"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dialek-6a219.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dialek-6a219",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dialek-6a219.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "423916223695",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:423916223695:web:449bd44c54cad998d8cbba"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -217,26 +158,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ✅ ENCRYPTION SYSTEM
-let cryptoSystem = null;
-let firebaseManager = null;
-let userPrivateKey = null;
-let userPublicKey = null;
-
-async function initializeEncryption() {
-  try {
-    cryptoSystem = new window.AESECCSystem();
-    firebaseManager = new window.FirebaseAESECC(db, cryptoSystem);
-    console.log('✅ Encryption system initialized');
-  } catch (error) {
-    console.error('❌ Encryption initialization failed:', error);
-  }
-}
-
-await initializeEncryption();
+console.log("✅ Firebase initialized");
 
 let currentUser = null;
 
+// ✅ FIXED: Safe element access dengan null checks
 const elements = {
   nameInput: document.getElementById('name'),
   usernameInput: document.getElementById('username'),
@@ -254,383 +180,211 @@ const elements = {
   successBanner: document.getElementById('success-banner'),
   successMessage: document.getElementById('success-message'),
   settingsForm: document.getElementById('settings-form'),
-  keyStatusDiv: document.getElementById('key-status'),
-  keyStatusText: document.getElementById('key-status-text'),
-  generateKeysBtn: document.getElementById('generate-keys-btn'),
-  exportKeyBtn: document.getElementById('export-key-btn'),
-  importKeyBtn: document.getElementById('import-key-btn'),
-  encryptProfileBtn: document.getElementById('encrypt-profile-btn'),
-  keyImportInput: document.getElementById('key-import-input')
 };
 
 function hideLoadingOverlay() {
-  elements.loadingOverlay.style.display = 'none';
+  if (elements.loadingOverlay) {
+    elements.loadingOverlay.style.display = 'none';
+  }
 }
 
 function showErrorBanner(message) {
-  elements.errorMessage.textContent = message;
-  elements.errorBanner.classList.add('show');
-  setTimeout(() => elements.errorBanner.classList.remove('show'), 5000);
+  if (elements.errorMessage && elements.errorBanner) {
+    elements.errorMessage.textContent = message;
+    elements.errorBanner.classList.add('show');
+    setTimeout(() => elements.errorBanner.classList.remove('show'), 5000);
+  }
 }
 
 function showSuccessBanner(message) {
-  elements.successMessage.textContent = message;
-  elements.successBanner.classList.add('show');
-  setTimeout(() => elements.successBanner.classList.remove('show'), 5000);
-}
-
-function hideErrorBanner() {
-  elements.errorBanner.classList.remove('show');
+  if (elements.successMessage && elements.successBanner) {
+    elements.successMessage.textContent = message;
+    elements.successBanner.classList.add('show');
+    setTimeout(() => elements.successBanner.classList.remove('show'), 5000);
+  }
 }
 
 function showStatus(message, isLoading = false) {
+  if (!elements.loadingMsg) return;
+  
   if (isLoading) {
     elements.loadingMsg.textContent = message;
     elements.loadingMsg.classList.remove('hidden');
-    elements.saveBtn.disabled = true;
-    elements.deleteBtn.disabled = true;
+    if (elements.saveBtn) elements.saveBtn.disabled = true;
+    if (elements.deleteBtn) elements.deleteBtn.disabled = true;
   } else {
     elements.loadingMsg.classList.add('hidden');
-    elements.saveBtn.disabled = false;
-    elements.deleteBtn.disabled = false;
+    if (elements.saveBtn) elements.saveBtn.disabled = false;
+    if (elements.deleteBtn) elements.deleteBtn.disabled = false;
   }
 }
 
-// ✅ CHECK AND LOAD ENCRYPTION KEYS
-async function checkEncryptionKeys(userId) {
-  try {
-    // Try load private key from localStorage
-    const privateKeyBackup = localStorage.getItem(`user_private_key_${userId}`);
-    
-    if (privateKeyBackup) {
-      const privateKeyJWK = JSON.parse(privateKeyBackup);
-      userPrivateKey = await window.crypto.subtle.importKey(
-        'jwk',
-        privateKeyJWK,
-        { name: 'ECDH', namedCurve: 'P-256' },
-        false,
-        ['deriveBits']
-      );
+// ✅ UPLOAD FOTO PROFIL
+if (elements.profilePicture) {
+  elements.profilePicture.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      elements.keyStatusText.innerHTML = `
-        <p style="color: #90EE90;"><strong>✅ Kunci Enkripsi Aktif</strong></p>
-        <p>Private Key: Tersimpan secara lokal (aman)</p>
-        <p>Public Key: Tersimpan di server untuk komunikasi terenkripsi</p>
-      `;
-
-      elements.exportKeyBtn.style.display = 'block';
-      elements.importKeyBtn.style.display = 'block';
-      elements.encryptProfileBtn.style.display = 'block';
-    } else {
-      elements.keyStatusText.innerHTML = `
-        <p style="color: #FFD700;"><strong>⚠️ Tidak Ada Kunci Enkripsi</strong></p>
-        <p>Klik "Generate Keys Baru" untuk mengaktifkan enkripsi end-to-end</p>
-      `;
-
-      elements.generateKeysBtn.style.display = 'block';
-    }
-  } catch (error) {
-    console.error('❌ Key check failed:', error);
-    elements.keyStatusText.textContent = 'Gagal memeriksa kunci enkripsi';
-  }
-}
-
-// ✅ GENERATE NEW ENCRYPTION KEYS
-elements.generateKeysBtn.onclick = async () => {
-  if (!currentUser) {
-    alert('Silakan login terlebih dahulu');
-    return;
-  }
-
-  if (await confirm('⚠️ Ini akan membuat kunci enkripsi baru. Lanjutkan?')) {
-    try {
-      showStatus('Membuat kunci enkripsi...', true);
-
-      const { publicKey, privateKey } = await cryptoSystem.generateECCKeyPair();
-      const publicKeyJWK = await cryptoSystem.exportPublicKeyToJWK(publicKey);
-      const privateKeyJWK = await window.crypto.subtle.exportKey('jwk', privateKey);
-
-      // Store public key in Firestore
-      await firebaseManager.storePublicKey(currentUser.uid, publicKeyJWK);
-
-      // Backup private key locally
-      localStorage.setItem(`user_private_key_${currentUser.uid}`, JSON.stringify(privateKeyJWK));
-
-      userPrivateKey = privateKey;
-      showStatus('', false);
-      showSuccessBanner('✅ Kunci enkripsi berhasil dibuat!');
-      await checkEncryptionKeys(currentUser.uid);
-
-    } catch (error) {
-      console.error('❌ Key generation failed:', error);
-      showStatus('', false);
-      showErrorBanner('Gagal membuat kunci: ' + error.message);
-    }
-  }
-};
-
-// ✅ ENCRYPT PROFILE
-elements.encryptProfileBtn.onclick = async () => {
-  if (!currentUser || !userPrivateKey) {
-    alert('Private key tidak ditemukan');
-    return;
-  }
-
-  try {
-    showStatus('Mengenkripsi profil...', true);
-
-    const profileData = {
-      name: elements.nameInput.value,
-      email: currentUser.email,
-      phone: elements.phoneInput.value,
-      username: elements.usernameInput.value,
-      profileImage: elements.profileImage.src
-    };
-
-    await firebaseManager.storeUserProfile(
-      currentUser.uid,
-      profileData,
-      userPrivateKey
-    );
-
-    showStatus('', false);
-    showSuccessBanner('✅ Profil berhasil dienkripsi!');
-
-  } catch (error) {
-    console.error('❌ Profile encryption failed:', error);
-    showStatus('', false);
-    showErrorBanner('Gagal mengenkripsi profil: ' + error.message);
-  }
-};
-
-// ✅ EXPORT PRIVATE KEY BACKUP
-elements.exportKeyBtn.onclick = async () => {
-  try {
-    const privateKeyBackup = localStorage.getItem(`user_private_key_${currentUser.uid}`);
-    
-    if (!privateKeyBackup) {
-      alert('Private key tidak ditemukan');
+    if (!currentUser) {
+      alert('Silakan login terlebih dahulu');
       return;
     }
 
-    const backupData = {
-      userId: currentUser.uid,
-      email: currentUser.email,
-      timestamp: new Date().toISOString(),
-      privateKey: JSON.parse(privateKeyBackup),
-      warning: 'KEEP THIS FILE SAFE - DO NOT SHARE!'
-    };
-
-    const dataStr = JSON.stringify(backupData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `dialek-key-backup-${currentUser.uid}.json`;
-    link.click();
-
-    showSuccessBanner('✅ Private key backup diunduh. Simpan di tempat aman!');
-
-  } catch (error) {
-    console.error('❌ Export failed:', error);
-    showErrorBanner('Gagal mengekspor kunci: ' + error.message);
-  }
-};
-
-// ✅ IMPORT PRIVATE KEY
-elements.importKeyBtn.onclick = () => {
-  elements.keyImportInput.click();
-};
-
-elements.keyImportInput.onchange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  try {
-    showStatus('Merestorasi kunci pribadi...', true);
-
-    const fileContent = await file.text();
-    const backupData = JSON.parse(fileContent);
-
-    if (backupData.userId !== currentUser.uid) {
-      throw new Error('File backup tidak sesuai dengan akun saat ini!');
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal 5MB');
+      return;
     }
 
-    // Restore private key
-    localStorage.setItem(`user_private_key_${currentUser.uid}`, JSON.stringify(backupData.privateKey));
+    if (!file.type.startsWith('image/')) {
+      alert('File harus berupa gambar');
+      return;
+    }
 
-    // Re-load private key
-    const privateKeyJWK = backupData.privateKey;
-    userPrivateKey = await window.crypto.subtle.importKey(
-      'jwk',
-      privateKeyJWK,
-      { name: 'ECDH', namedCurve: 'P-256' },
-      false,
-      ['deriveBits']
+    try {
+      showStatus('Mengunggah foto...', true);
+      
+      const imageRef = ref(storage, `profile/${currentUser.uid}_${Date.now()}.jpg`);
+      await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(imageRef);
+      
+      if (elements.profileImage) elements.profileImage.src = url;
+      
+      await setDoc(doc(db, "users", currentUser.uid), {
+        profileImage: url,
+        updated_at: new Date().toISOString()
+      }, { merge: true });
+      
+      showStatus('', false);
+      showSuccessBanner('✅ Foto profil berhasil diperbarui');
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      showStatus('', false);
+      showErrorBanner('Gagal mengunggah foto: ' + error.message);
+    }
+  });
+}
+
+// ✅ SIMPAN PROFIL
+if (elements.saveBtn) {
+  elements.saveBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) {
+      alert("Silakan login terlebih dahulu");
+      return;
+    }
+
+    const name = elements.nameInput.value.trim();
+    const username = elements.usernameInput.value.trim();
+    const phone = elements.phoneInput.value.trim();
+
+    if (!name || !username) {
+      alert("Nama dan username harus diisi");
+      return;
+    }
+
+    if (username.length < 3) {
+      alert("Username minimal 3 karakter");
+      return;
+    }
+
+    try {
+      showStatus('Menyimpan profil...', true);
+      
+      const profileData = {
+        name,
+        username: username.toLowerCase(),
+        phone,
+        email: currentUser.email,
+        profileImage: elements.profileImage ? elements.profileImage.src : '../assets/pp.webp',
+        updated_at: new Date().toISOString()
+      };
+
+      // Simpan data profil ke Firestore
+      await setDoc(doc(db, "users", currentUser.uid), profileData, { merge: true });
+
+      // Simpan ke localStorage
+      localStorage.setItem('name', name);
+      localStorage.setItem('username', username);
+      localStorage.setItem('phone', phone);
+
+      showStatus('', false);
+      showSuccessBanner("✅ Profil berhasil diperbarui!");
+    } catch (error) {
+      console.error('❌ Save error:', error);
+      showStatus('', false);
+      showErrorBanner("Gagal menyimpan profil: " + error.message);
+    }
+  });
+}
+
+// ✅ HAPUS AKUN
+if (elements.deleteBtn) {
+  elements.deleteBtn.addEventListener('click', async () => {
+    if (!currentUser) {
+      alert("Silakan login terlebih dahulu");
+      return;
+    }
+
+    const confirmed = confirm(
+      "⚠️ PERINGATAN!\n\n" +
+      "Apakah Anda yakin ingin menghapus akun?\n\n" +
+      "• Semua data akan hilang permanen\n" +
+      "• Tindakan ini TIDAK DAPAT DIBATALKAN\n\n" +
+      "Ketik 'HAPUS' pada prompt berikutnya untuk konfirmasi."
     );
-
-    showStatus('', false);
-    showSuccessBanner('✅ Private key berhasil direstore!');
-    await checkEncryptionKeys(currentUser.uid);
-
-  } catch (error) {
-    console.error('❌ Import failed:', error);
-    showStatus('', false);
-    showErrorBanner('Gagal merestorasi kunci: ' + error.message);
-  }
-};
-
-// ✅ UPLOAD PROFILE PICTURE
-elements.profilePicture.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!currentUser) {
-    alert('Silakan login terlebih dahulu');
-    return;
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Ukuran file maksimal 5MB');
-    return;
-  }
-
-  if (!file.type.startsWith('image/')) {
-    alert('File harus berupa gambar');
-    return;
-  }
-
-  try {
-    showStatus('Mengunggah foto...', true);
     
-    const imageRef = ref(storage, `profile/${currentUser.uid}_${Date.now()}.jpg`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
+    if (!confirmed) return;
+
+    const confirmText = prompt("Ketik 'HAPUS' untuk mengkonfirmasi:");
     
-    elements.profileImage.src = url;
-    
-    await setDoc(doc(db, "users", currentUser.uid), {
-      profile_image: url,
-      updated_at: new Date().toISOString()
-    }, { merge: true });
-    
-    showStatus('', false);
-    showSuccessBanner('✅ Foto profil berhasil diperbarui');
-  } catch (error) {
-    console.error('❌ Upload error:', error);
-    showStatus('', false);
-    showErrorBanner('Gagal mengunggah foto: ' + error.message);
-  }
-});
-
-// ✅ SAVE PROFILE
-elements.saveBtn.addEventListener('click', async (e) => {
-  e.preventDefault();
-  
-  if (!currentUser) {
-    alert("Silakan login terlebih dahulu");
-    return;
-  }
-
-  const name = elements.nameInput.value.trim();
-  const username = elements.usernameInput.value.trim();
-  const phone = elements.phoneInput.value.trim();
-
-  if (!name || !username) {
-    alert("Nama dan username harus diisi");
-    return;
-  }
-
-  if (username.length < 3) {
-    alert("Username minimal 3 karakter");
-    return;
-  }
-
-  try {
-    showStatus('Menyimpan profil...', true);
-    
-    const profileData = {
-      name,
-      username: username.toLowerCase(),
-      phone,
-      email: currentUser.email,
-      profile_image: elements.profileImage.src,
-      updated_at: new Date().toISOString()
-    };
-
-    // Store plain text (option to encrypt separately via button)
-    await setDoc(doc(db, "users", currentUser.uid), profileData, { merge: true });
-
-    localStorage.setItem('name', name);
-    localStorage.setItem('username', username);
-    localStorage.setItem('phone', phone);
-
-    showStatus('', false);
-    showSuccessBanner("✅ Profil berhasil diperbarui!");
-  } catch (error) {
-    console.error('❌ Save error:', error);
-    showStatus('', false);
-    showErrorBanner("Gagal menyimpan profil: " + error.message);
-  }
-});
-
-// ✅ DELETE ACCOUNT
-elements.deleteBtn.addEventListener('click', async () => {
-  if (!currentUser) {
-    alert("Silakan login terlebih dahulu");
-    return;
-  }
-
-  const confirmed = confirm(
-    "⚠️ PERINGATAN!\n\n" +
-    "Apakah Anda yakin ingin menghapus akun?\n\n" +
-    "• Semua data akan hilang permanen\n" +
-    "• Tindakan ini TIDAK DAPAT DIBATALKAN\n\n" +
-    "Ketik 'HAPUS' pada prompt berikutnya untuk konfirmasi."
-  );
-  
-  if (!confirmed) return;
-
-  const confirmText = prompt("Ketik 'HAPUS' untuk mengkonfirmasi:");
-  
-  if (confirmText !== 'HAPUS') {
-    alert("Penghapusan akun dibatalkan");
-    return;
-  }
-
-  try {
-    showStatus('Menghapus akun...', true);
-    
-    await deleteDoc(doc(db, "users", currentUser.uid));
-    await deleteUser(currentUser);
-    
-    localStorage.clear();
-    
-    alert("Akun berhasil dihapus");
-    window.location.href = "./daftar.html";
-  } catch (error) {
-    console.error('❌ Delete error:', error);
-    showStatus('', false);
-    
-    if (error.code === 'auth/requires-recent-login') {
-      alert("Untuk keamanan, Anda harus login kembali sebelum menghapus akun.");
-      window.location.href = "./masuk.html";
-    } else {
-      showErrorBanner("Gagal menghapus akun: " + error.message);
+    if (confirmText !== 'HAPUS') {
+      alert("Penghapusan akun dibatalkan");
+      return;
     }
-  }
-});
 
-// ✅ NAVIGATION
-elements.homeBtn.addEventListener('click', () => {
-  window.location.href = "./akun-pengguna.html";
-});
+    try {
+      showStatus('Menghapus akun...', true);
+      
+      // Hapus data user dari Firestore
+      await deleteDoc(doc(db, "users", currentUser.uid));
+      
+      // Hapus user dari Firebase Auth
+      await deleteUser(currentUser);
+      
+      // Hapus localStorage
+      localStorage.clear();
+      
+      alert("Akun berhasil dihapus");
+      window.location.href = "./daftar.html";
+    } catch (error) {
+      console.error('❌ Delete error:', error);
+      showStatus('', false);
+      
+      if (error.code === 'auth/requires-recent-login') {
+        alert("Untuk keamanan, Anda harus login kembali sebelum menghapus akun.");
+        window.location.href = "./masuk.html";
+      } else {
+        showErrorBanner("Gagal menghapus akun: " + error.message);
+      }
+    }
+  });
+}
 
-elements.settingsForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-});
+// ✅ NAVIGASI KE HOME
+if (elements.homeBtn) {
+  elements.homeBtn.addEventListener('click', () => {
+    window.location.href = "./akun-pengguna.html";
+  });
+}
 
-// ✅ AUTH STATE HANDLER
+if (elements.settingsForm) {
+  elements.settingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+  });
+}
+
+// ✅ HANDLE AUTH STATE
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     alert("Silakan login terlebih dahulu");
@@ -641,23 +395,22 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
   try {
-    elements.emailInput.value = user.email || '';
+    // Tampilkan email user
+    if (elements.emailInput) elements.emailInput.value = user.email || '';
 
+    // Load data user dari Firestore
     const userDoc = await getDoc(doc(db, "users", user.uid));
     
     if (userDoc.exists()) {
       const userData = userDoc.data();
       
-      elements.nameInput.value = userData.name || '';
-      elements.usernameInput.value = userData.username || '';
-      elements.phoneInput.value = userData.phone || '';
+      if (elements.nameInput) elements.nameInput.value = userData.name || '';
+      if (elements.usernameInput) elements.usernameInput.value = userData.username || '';
+      if (elements.phoneInput) elements.phoneInput.value = userData.phone || '';
       
-      const imageUrl = userData.profile_image || '../assets/pp.webp';
-      elements.profileImage.src = imageUrl;
+      const imageUrl = userData.profileImage || '../assets/pp.webp';
+      if (elements.profileImage) elements.profileImage.src = imageUrl;
     }
-
-    // Check encryption keys
-    await checkEncryptionKeys(user.uid);
 
     hideLoadingOverlay();
   } catch (error) {
@@ -667,7 +420,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-console.log('✅ Pengaturan dengan enkripsi loaded');
+console.log('✅ Pengaturan loaded successfully');
 </script>
 
 </body>

@@ -7,8 +7,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="/src/styles/style2.css">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         .input-container {
             position: relative;
@@ -137,9 +135,7 @@
         </div>
     </section>
 
-    <!-- ✅ INLINE CRYPTO MODULES - NO IMPORT NEEDED! -->
     <script>
-        // ✅ Inline AESECCSystem class - No module import issues!
         class AESECCSystem {
             constructor() {
                 this.curve = "P-256";
@@ -185,9 +181,7 @@
             }
         }
 
-        // ✅ Make globally available
         window.AESECCSystem = AESECCSystem;
-        console.log("✅ AESECCSystem loaded inline - no module import needed!");
     </script>
 
     <script type="module">
@@ -195,7 +189,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        // ✅ Firebase Config - GANTI DENGAN CONFIG ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyCrmVDlBwRkkzP_rYY3mXBKw_ihrkV3tVM",
             authDomain: "dialek-6a219.firebaseapp.com",
@@ -212,11 +205,6 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        console.log("✅ Firebase initialized");
-        console.log("✅ Google Provider initialized");
-        console.log("✅ AESECCSystem available from inline script");
-
-        // ✅ Form Validation
         function validateSignupForm() {
             const name = document.getElementById('name').value.trim();
             const username = document.getElementById('username').value.trim();
@@ -224,37 +212,31 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Clear all errors
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
 
             let isValid = true;
 
-            // Validate name
             if (!name) {
                 document.getElementById('name-error').classList.add('show');
                 isValid = false;
             }
 
-            // Validate username
             if (!username || username.length < 3) {
                 document.getElementById('username-error').classList.add('show');
                 isValid = false;
             }
 
-            // Validate email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email || !emailRegex.test(email)) {
                 document.getElementById('email-error').classList.add('show');
                 isValid = false;
             }
 
-            // Validate password
             if (password.length < 6) {
                 document.getElementById('password-error').classList.add('show');
                 isValid = false;
             }
 
-            // Validate confirm password
             if (password !== confirmPassword) {
                 document.getElementById('confirm-error').classList.add('show');
                 isValid = false;
@@ -263,7 +245,6 @@
             return isValid;
         }
 
-        // ✅ Set Loading State
         function setLoadingState(button, isLoading) {
             if (isLoading) {
                 button.disabled = true;
@@ -277,13 +258,10 @@
             }
         }
 
-        // ✅ Email/Password Signup
         document.getElementById("signup-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            // Validate form
             if (!validateSignupForm()) {
-                console.log("❌ Form validation failed");
                 return;
             }
 
@@ -296,23 +274,15 @@
             setLoadingState(btn, true);
 
             try {
-                console.log("🔄 Creating Firebase user...");
-                // 1️⃣ Create user in Firebase Auth
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
                 const user = cred.user;
-                console.log("✅ User created:", user.uid);
 
-                // 2️⃣ Generate ECC Keys using inline class
-                console.log("🔄 Generating ECC keys...");
                 const cryptoSystem = new window.AESECCSystem();
                 const keyPair = await cryptoSystem.generateECCKeyPair();
-                console.log("✅ ECC keys generated");
 
                 const publicKeyJWK = await cryptoSystem.exportPublicKeyToJWK(keyPair.publicKey);
                 const privateKeyJWK = await cryptoSystem.exportPrivateKey(keyPair.privateKey);
 
-                // 3️⃣ Store user profile in Firestore
-                console.log("🔄 Storing user profile...");
                 await setDoc(doc(db, "users", user.uid), {
                     name,
                     username,
@@ -323,10 +293,7 @@
                     study_duration: 0,
                     created_at: serverTimestamp()
                 });
-                console.log("✅ User profile stored");
 
-                // 4️⃣ Store PUBLIC key in Firestore
-                console.log("🔄 Storing public key...");
                 await setDoc(
                     doc(db, "users", user.uid, "keys", "public"),
                     {
@@ -335,63 +302,47 @@
                         createdAt: serverTimestamp()
                     }
                 );
-                console.log("✅ Public key stored");
 
-                // 5️⃣ Store PRIVATE key in localStorage ONLY
-                console.log("🔄 Storing private key in localStorage...");
-                localStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
+                // Store private key in sessionStorage (auto-clears on tab close)
+                sessionStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
 
-                // 6️⃣ Store user data in localStorage for quick access
                 localStorage.setItem('firebase_uid', user.uid);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', email);
                 localStorage.setItem('name', name);
-                localStorage.setItem('profile_image', '');
 
-                console.log("✅ All data stored successfully");
-                alert("✅ Pendaftaran berhasil! Selamat datang di Dialek.id");
-                
-                // Redirect to dashboard
+                alert("Pendaftaran berhasil!");
                 window.location.href = "dashboardBatak.html";
 
             } catch (error) {
-                console.error("❌ Signup Error:", error);
+                console.error("Signup Error:", error);
                 setLoadingState(btn, false);
 
-                // Handle specific Firebase errors
                 if (error.code === 'auth/email-already-in-use') {
-                    alert("❌ Email sudah terdaftar! Gunakan email lain atau login.");
+                    alert("Email sudah terdaftar!");
                 } else if (error.code === 'auth/weak-password') {
-                    alert("❌ Password terlalu lemah! Gunakan minimal 6 karakter.");
+                    alert("Password terlalu lemah!");
                 } else if (error.code === 'auth/invalid-email') {
-                    alert("❌ Format email tidak valid!");
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    alert("❌ Operasi tidak diizinkan. Hubungi admin.");
+                    alert("Format email tidak valid!");
                 } else {
-                    alert("❌ Error: " + (error.message || "Terjadi kesalahan saat pendaftaran"));
+                    alert("Error: " + error.message);
                 }
             }
         });
 
-        // ✅ Google Sign-Up dengan Enhanced Debugging
         document.getElementById('googleLogin').addEventListener('click', async (e) => {
             e.preventDefault();
             
-            console.log("🔄 [1] Google button clicked");
-
-            // Validate name and username filled
             const name = document.getElementById('name').value.trim();
             const username = document.getElementById('username').value.trim();
 
             if (!name || !username) {
-                alert("⚠️ Masukkan Nama dan Username terlebih dahulu!");
-                console.warn("⚠️ Name or username empty:", { name, username });
+                alert("Masukkan Nama dan Username terlebih dahulu!");
                 return;
             }
 
             if (username.length < 3) {
-                alert("⚠️ Username minimal 3 karakter!");
-                console.warn("⚠️ Username terlalu pendek:", username.length);
+                alert("Username minimal 3 karakter!");
                 return;
             }
 
@@ -399,36 +350,18 @@
             setLoadingState(btn, true);
 
             try {
-                console.log("🔄 [2] Preparing Google authentication...");
-                console.log("   - Firebase Auth initialized:", !!auth);
-                console.log("   - Google provider created:", !!googleProvider);
-                
-                console.log("🔄 [3] Launching Google popup...");
                 const result = await signInWithPopup(auth, googleProvider);
-                
-                console.log("✅ [4] Google popup success!");
-                console.log("   - User ID:", result.user.uid);
-                console.log("   - Email:", result.user.email);
-                console.log("   - Display Name:", result.user.displayName);
-                console.log("   - Photo URL:", result.user.photoURL);
-
                 const user = result.user;
 
-                // Check if user already exists
-                console.log("🔄 [5] Checking if user exists in Firestore...");
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 
                 if (!userDoc.exists()) {
-                    console.log("🔄 [6] User is NEW, creating profile...");
-                    
-                    // Generate ECC Keys for new user
                     const cryptoSystem = new window.AESECCSystem();
                     const keyPair = await cryptoSystem.generateECCKeyPair();
 
                     const publicKeyJWK = await cryptoSystem.exportPublicKeyToJWK(keyPair.publicKey);
                     const privateKeyJWK = await cryptoSystem.exportPrivateKey(keyPair.privateKey);
 
-                    // Store user profile
                     await setDoc(doc(db, "users", user.uid), {
                         name: name || user.displayName || "User",
                         username,
@@ -439,9 +372,7 @@
                         study_duration: 0,
                         created_at: serverTimestamp()
                     });
-                    console.log("✅ [6a] User profile created");
 
-                    // Store public key
                     await setDoc(
                         doc(db, "users", user.uid, "keys", "public"),
                         {
@@ -450,75 +381,34 @@
                             createdAt: serverTimestamp()
                         }
                     );
-                    console.log("✅ [6b] Public key stored");
 
-                    // Store private key in localStorage
-                    localStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
-                    console.log("✅ [6c] Private key stored in localStorage");
-
-                } else {
-                    console.log("✅ [5] User already exists in Firestore");
+                    // Store private key in sessionStorage (auto-clears on tab close)
+                    sessionStorage.setItem(`privKey_${user.uid}`, JSON.stringify(privateKeyJWK));
                 }
 
-                // Store user data in localStorage
                 localStorage.setItem('firebase_uid', user.uid);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', user.email);
                 localStorage.setItem('name', name || user.displayName || "User");
                 localStorage.setItem('profile_image', user.photoURL || '');
-                console.log("✅ [7] User data stored in localStorage");
 
-                console.log("✅ [8] Google signup COMPLETE!");
-                alert("✅ Pendaftaran dengan Google berhasil!");
-                
-                // Redirect to dashboard
+                alert("Pendaftaran dengan Google berhasil!");
                 window.location.href = "dashboardBatak.html";
 
             } catch (error) {
-                console.error('❌ [ERROR] Google Sign-up failed:', error);
-                console.error('Error code:', error.code);
-                console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
-                
+                console.error('Google Sign-up failed:', error);
                 setLoadingState(btn, false);
 
-                // Detailed error messages
                 if (error.code === 'auth/popup-closed-by-user') {
-                    console.log("❌ User closed Google popup");
-                    alert("❌ Popup Google ditutup. Silakan coba lagi.");
-                    
-                } else if (error.code === 'auth/cancelled-popup-request') {
-                    console.log("❌ Popup request cancelled (multiple requests)");
-                    alert("❌ Request dibatalkan. Silakan tunggu dan coba lagi.");
-                    
+                    alert("Popup Google ditutup.");
                 } else if (error.code === 'auth/popup-blocked') {
-                    console.log("❌ Popup blocked by browser");
-                    alert("❌ Popup diblokir oleh browser. Izinkan popup di browser settings: \n\n1. Klik icon lock/shield di address bar\n2. Cari 'Pop-ups and redirects'\n3. Pilih 'Allow'");
-                    
-                } else if (error.code === 'auth/network-request-failed') {
-                    console.log("❌ Network error");
-                    alert("❌ Koneksi internet bermasalah. Periksa koneksi dan coba lagi.");
-                    
-                } else if (error.code === 'auth/invalid-api-key') {
-                    console.log("❌ Firebase API key invalid");
-                    alert("❌ Firebase config tidak valid. Hubungi admin.");
-                    
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    console.log("❌ Google sign-in not enabled in Firebase");
-                    alert("❌ Google sign-in tidak aktif di Firebase Console.\n\nPastikan:\n1. Go to Firebase Console\n2. Authentication → Sign-in methods\n3. Google → ENABLE\n4. Save");
-                    
-                } else if (error.code === 'auth/internal-error') {
-                    console.log("❌ Firebase internal error");
-                    alert("❌ Firebase error. Coba lagi atau hubungi admin.");
-                    
+                    alert("Popup diblokir oleh browser.");
                 } else {
-                    console.log("❌ Unexpected error:", error.code);
-                    alert("❌ Error: " + (error.message || "Terjadi kesalahan saat login dengan Google"));
+                    alert("Error: " + error.message);
                 }
             }
         });
 
-        // ✅ Back to landing page
         document.getElementById('landing-page').addEventListener('click', () => {
             window.location.href = "/index.html";
         });

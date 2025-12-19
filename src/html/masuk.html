@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--
+    ============================================
+    Dialek.id - Login Page (masuk.html)
+    ============================================
+    
+    SECURITY ARCHITECTURE:
+    - User authentication via Firebase Auth (Email/Password or Google)
+    - User data (non-sensitive) stored in localStorage for persistence
+    - Private keys stored in sessionStorage (auto-clears on tab close)
+    - All encryption/decryption happens client-side via Web Crypto API
+    
+    AUTHENTICATION FLOW:
+    1. User submits email + password OR logs in via Google
+    2. Firebase Auth validates credentials
+    3. User profile data fetched from Firestore
+    4. Non-sensitive data → localStorage (persistent)
+    5. Private key → sessionStorage if exists (session-based)
+    6. Redirect to dashboard
+    
+    SECURITY NOTES:
+    - Private keys are NOT managed by login page (set during signup)
+    - If private key missing: user cannot decrypt forum posts
+    - Solution: User must logout/re-login from signup page to regenerate keys
+    - sessionStorage auto-clears on tab close for enhanced security
+    
+    For security architecture details, see SECURITY_ARCHITECTURE.md
+    ============================================
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dialek.id - Masuk</title>
@@ -145,12 +173,23 @@
                 const userDoc = await getDoc(doc(db, 'users', uid));
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
+                    // Store non-sensitive user metadata in localStorage (auto-persisted)
                     localStorage.setItem('firebase_uid', uid);
                     localStorage.setItem('username', userData.username || 'User');
                     localStorage.setItem('email', userData.email || '');
                     localStorage.setItem('name', userData.name || 'User');
                     localStorage.setItem('profile_image', userData.profile_image || '/src/assets/pp.webp');
                     localStorage.setItem('phone', userData.phone || '');
+                    
+                    // Check if private key exists in sessionStorage
+                    // Note: Private keys are session-based and auto-clear on tab close
+                    const privateKeyExists = sessionStorage.getItem(`privKey_${uid}`);
+                    if (!privateKeyExists) {
+                        console.warn('⚠️ Private key not found in sessionStorage');
+                        console.warn('ℹ️ User may not have completed signup with key generation');
+                        console.warn('ℹ️ Forum encryption/decryption will not work without private key');
+                    }
+                    
                     return true;
                 }
                 return false;

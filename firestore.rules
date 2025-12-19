@@ -2,26 +2,65 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Users collection - user can only read/write their own data
+    // Users collection: owner-only writes, authed reads
     match /users/{userId} {
-      // Allow user to read and write their own document
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow authenticated users to read other users' basic info (for leaderboard, forum, etc)
+      // Read basic user profile for authenticated users
       allow read: if request.auth != null;
+      // Create/update/delete only by the user themselves
+      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+
+      // Keys subcollection (e.g., users/{userId}/keys/public)
+      match /keys/{docId} {
+        allow read: if request.auth != null;
+        allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Messages subcollection (users/{userId}/messages/{messageId})
+      match /messages/{messageId} {
+        // Only the owner can read messages in their collection
+        allow read: if request.auth != null && request.auth.uid == userId;
+
+        // Allow owner to create messages in their own collection (outbox/inbox)
+        // Also allow the sender to create a 'received' copy in the recipient's collection
+        allow create: if request.auth != null && (
+          request.auth.uid == userId ||
+          request.resource.data.senderId == request.auth.uid
+        );
+
+        // Only the owner may modify or delete messages within their collection
+        allow update, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
     
-    // Leaderboards collection - public read, authenticated write
+    // Leaderboards collection - authenticated read/write
     match /leaderboards/{document=**} {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
     }
     
-    // Forum/Discussion collection (if needed in future)
-    match /discussions/{document=**} {
+    // Forum Questions (src/html pages use 'forum_questions')
+    // Only encryptedContent stored, decrypted via shared forum key
+    match /forum_questions/{questionId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      // Author must match the userId field on create
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Only the author may update or delete
       allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Forum Answers (src/html pages use 'forum_answers')
+    // Only encryptedContent stored, decrypted via shared forum key
+    match /forum_answers/{answerId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Optional: Generic forum collection used by FirebaseAESECC (authorId field)
+    match /forum/{docId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
     }
     
     // Progress tracking

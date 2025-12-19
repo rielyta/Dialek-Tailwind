@@ -1,15 +1,4 @@
-/**
- * DIAGNOSTIC & FIX SCRIPT
- * ========================
- * Jalankan di Firebase Console atau buat Cloud Function
- * Untuk memverifikasi & memperbaiki struktur data user
- */
 
-// ==========================================
-// OPTION 1: JALANKAN DI BROWSER CONSOLE
-// ==========================================
-
-// Paste di browser console (saat sudah login):
 
 async function diagnoseUserData() {
     try {
